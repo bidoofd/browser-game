@@ -1,1 +1,0 @@
-To start, run npm i in the directory, then npm run dev to run a local webserver
