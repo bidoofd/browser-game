@@ -9,7 +9,7 @@ export class MainMenu extends Scene
     title: GameObjects.Text;
 
     private blocks: Physics.Arcade.StaticGroup
-    private player: Physics.Arcade.Image
+    private player: Physics.Arcade.Sprite
     private cursors: Types.Input.Keyboard.CursorKeys
     
     constructor ()
@@ -17,13 +17,32 @@ export class MainMenu extends Scene
         super('MainMenu');
     }
 
+    preload() {
+        // Accepts cursor key input
+        this.cursors = this.input.keyboard!.createCursorKeys();
+
+        // Loads all tiles
+        this.load.image('tiles', 'assets/images/tiles.png');
+
+        // Loads tile level data
+        this.load.tilemapTiledJSON('levelone', 'assets/tilemapdata/level1.json');
+    }
+
     create ()
     {
+        // Create level tilemap and block tileset
+        const levelOne = this.make.tilemap({ key: 'levelone', tileWidth: 16, tileHeight: 16})
+        const blockTileset = levelOne.addTilesetImage('blockTiles', 'tiles')
+
+        // Create and render layers
+        levelOne.createLayer('Background', blockTileset!, 0, 0)
+        const blockTiles = levelOne.createLayer('Blocks', blockTileset!)
+        
         // Creates a group of blocks for physics
         this.blocks = this.physics.add.staticGroup();
 
         // Adds the ground
-        this.blocks.create(800, 600, 'ground').setScale(10).refreshBody()
+        //this.blocks.create(800, 600, 'ground').setScale(10).refreshBody()
 
         // On click will place a "Block"
         this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
@@ -34,11 +53,11 @@ export class MainMenu extends Scene
         this.player = this.physics.add.sprite(400, 300, 'player')
         this.player.setCollideWorldBounds(true)
 
-        // Accepts cursor key input
-        this.cursors = this.input.keyboard!.createCursorKeys();
-
         // Adds physics collider between block types and the player
+        blockTiles!.setCollisionByProperty({ collide: true})
+        this.physics.add.collider(this.player, blockTiles!)
         this.physics.add.collider(this.player, this.blocks)
+
     }
 
     update() {
@@ -59,7 +78,7 @@ export class MainMenu extends Scene
             this.player.setVelocityX(-10)
         }
         // Pressing Up, AND player is touching ground
-        if(this.cursors.up.isDown && this.player.body!.touching.down) {
+        if(this.cursors.up.isDown && (this.player.body!.touching.down || this.player.body?.blocked.down)) {
             this.player.setVelocityY(-330)
         }
     }
