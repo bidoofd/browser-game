@@ -46,25 +46,38 @@ export class MainMenu extends Scene
 
         // On click will place a "Block"
         this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
-            this.blocks.create(pointer.x, pointer.y, 'block') as Physics.Arcade.Sprite;
+            const currentBlock = this.blocks.create(pointer.x, pointer.y, 'block') as Physics.Arcade.Sprite;
+            currentBlock.setDisplaySize(16, 16)
+            currentBlock.setSize(16, 16)
+            currentBlock.setOrigin(0.8)
         }, this);
 
         // Adds player in physics
         this.player = this.physics.add.sprite(400, 300, 'player')
+        this.player.setMaxVelocity(800)
         this.player.setCollideWorldBounds(true)
+        this.player.setDisplaySize(16, 16)
 
         // Adds physics collider between block types and the player
         blockTiles!.setCollisionByProperty({ collide: true})
         this.physics.add.collider(this.player, blockTiles!)
         this.physics.add.collider(this.player, this.blocks)
 
+        this.cursors.up.on('down', () =>
+            {
+                if (this.player.body!.blocked.down)
+                {
+                    this.player.setVelocityY(-200);
+                }
+            }, this);
+
+            
+
     }
 
     update() {
-        // No cursor exists
-        if(!this.cursors) {
-            return
-        }
+
+        this.player.setVelocityX(-10)
         // Left Press Down
         if(this.cursors.left.isDown) {
             this.player.setVelocityX(-160)
@@ -72,14 +85,6 @@ export class MainMenu extends Scene
         // Right Press Down
         else if(this.cursors.right.isDown) {
             this.player.setVelocityX(160)
-        }
-        else {
-        // Not Pressing Down
-            this.player.setVelocityX(-10)
-        }
-        // Pressing Up, AND player is touching ground
-        if(this.cursors.up.isDown && (this.player.body!.touching.down || this.player.body?.blocked.down)) {
-            this.player.setVelocityY(-330)
         }
     }
 }
