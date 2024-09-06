@@ -28,6 +28,7 @@
             "phaser",
             "node"
         ],
+        "strictNullChecks": true
     },
     "include": [
         "src",
