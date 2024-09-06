@@ -10,7 +10,7 @@ export class Preloader extends Scene
     init ()
     {
         //  Loading background image
-        this.add.image(400, 300, 'background');
+        //this.add.image(400, 300, 'background');
     }
 
     preload ()
@@ -18,7 +18,7 @@ export class Preloader extends Scene
         //console.log("currentFilePath", __dirname)
 
         // Preloads asset images
-        this.load.image('player', 'assets/images/redCircle.png');
+        this.load.image('player', 'assets/images/smiley.png');
         this.load.image('block', 'assets/images/blueBlock.png');
         this.load.image('ground', 'assets/images/redBlock.png');
     }

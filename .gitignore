@@ -1,2 +1,4 @@
 node_modules/
-public/bundle.min.js
+bundle.min.js
+.vscode
+.DS_Store
