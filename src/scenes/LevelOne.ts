@@ -85,7 +85,7 @@ export class LevelOne extends Scene
         // Creates a group of blocks for physics
         this.blocks = this.physics.add.staticGroup();
 
-        // Block placement logic (TODO: add collision to blocks that are placed ON TOP of a background)
+        // Block placement logic
         this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
             const blockArray: Tilemaps.Tile[] = []
             this.blockLayer.forEachTile((tile: Tilemaps.Tile) => {
@@ -101,9 +101,10 @@ export class LevelOne extends Scene
                 const blockTileToRemove = this.getTilePositionFromMap(pointer, this.level, this.blockLayer, blockArray)
                 const backgroundTileToRemove = this.getTilePositionFromMap(pointer, this.level, this.backgroundLayer, backgroundArray)
                 if(blockTileToRemove !== undefined) {
-                    this.level.removeTile(blockTileToRemove!, 14, false)
+                    this.level.removeTile(blockTileToRemove, 14, false)
+                    this.level.getTileAt(blockTileToRemove.x, blockTileToRemove.y, true, this.blockLayer)!.setCollision(true, true, true, true)
                 } else if(backgroundTileToRemove !== undefined) {
-                    this.level.removeTile(backgroundTileToRemove!, 14, false)
+                    this.level.removeTile(backgroundTileToRemove, 0, false)
                 }
             }
         }, this);
