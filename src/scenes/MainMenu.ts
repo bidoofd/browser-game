@@ -13,7 +13,7 @@ export class MainMenu extends Scene
 
     create ()
     {
-        this.add.image(400, 100, 'logo')
+        this.add.image((this.game.canvas.width / 2), (this.game.canvas.height / 2) - 100, 'logo')
 
         this.levelOne = new Button(this, (this.game.canvas.width / 2) - 50, (this.game.canvas.height / 2) - 25, 'Level One', null, () => this.gotoLevelOne());
         this.add.existing(this.levelOne);
