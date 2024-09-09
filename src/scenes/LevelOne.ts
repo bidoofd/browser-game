@@ -32,6 +32,13 @@ export class LevelOne extends Scene
     private screenHeight: number
     private levelWidth: number
     private levelHeight: number
+
+    private blockPaletteMap: Tilemaps.Tilemap
+    private blockPaletteTileSetImage: Tilemaps.Tileset
+    private blockPaletteLayer: Tilemaps.TilemapLayer
+
+    private marker: GameObjects.Graphics
+    private selectedTile: Tilemaps.Tile
     
     constructor ()
     {
@@ -62,6 +69,32 @@ export class LevelOne extends Scene
     {
         // Create level tilemap and block tileset
         this.level = this.make.tilemap({ key: 'levelone', tileWidth: 16, tileHeight: 16})
+        this.blockPaletteMap = this.make.tilemap({tileHeight: 16, tileWidth: 16, height: 48, width: 144})
+
+        this.blockPaletteTileSetImage = this.blockPaletteMap.addTilesetImage('Palette', 'tiles')!
+
+        this.blockPaletteLayer = this.blockPaletteMap.createBlankLayer('Palette', this.blockPaletteTileSetImage)!
+
+        let blockTiles: number[][] = [];
+
+        let value = 0;
+        for (let row = 0; row < this.blockPaletteMap.height / this.blockPaletteMap.tileHeight; row++) {
+            blockTiles[row] = [];  // Initialize the row
+            for (let col = 0; col < this.blockPaletteMap.width / this.blockPaletteMap.tileWidth; col++) {
+                blockTiles[row][col] = value;
+                value++;  // Increment the value for the next tile
+            }
+        }
+    
+        // Set the tile data to the layer
+        this.blockPaletteLayer.putTilesAt(blockTiles, 35, 15);
+
+        // Block outline hover
+        this.marker = this.add.graphics()
+        this.marker.lineStyle(2, 0x000000, 1);
+        this.marker.strokeRect(0, 0, this.blockPaletteMap.tileWidth, this.blockPaletteMap.tileHeight);
+
+        this.cameras.main.setBounds(this.blockPaletteLayer.getTopLeft().x, this.blockPaletteLayer.getTopLeft().y, this.blockPaletteMap.widthInPixels, this.blockPaletteMap.heightInPixels);
 
         // Sets the level width and height based on the current level in pixels
         this.levelWidth = this.level.widthInPixels
@@ -87,6 +120,7 @@ export class LevelOne extends Scene
 
         // Block placement logic
         this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
+            // Convert the tilemaps into arrays
             const blockArray: Tilemaps.Tile[] = []
             this.blockLayer.forEachTile((tile: Tilemaps.Tile) => {
                 blockArray.push(tile)
@@ -97,12 +131,14 @@ export class LevelOne extends Scene
                     backgroundArray.push(tile)
                 }
             });
+
+            // Block placement logic
             if((pointer.x >= this.blockLayer.getBottomLeft().x && pointer.x <= this.blockLayer.getBottomRight().x) && (pointer.y <= this.blockLayer.getBottomLeft().y && pointer.y >= this.blockLayer.getTopLeft().y)) {
                 const blockTileToRemove = this.getTilePositionFromMap(pointer, this.level, this.blockLayer, blockArray)
                 const backgroundTileToRemove = this.getTilePositionFromMap(pointer, this.level, this.backgroundLayer, backgroundArray)
                 if(blockTileToRemove !== undefined) {
-                    this.level.removeTile(blockTileToRemove, 14, false)
-                    this.level.getTileAt(blockTileToRemove.x, blockTileToRemove.y, true, this.blockLayer)!.setCollision(true, true, true, true)
+                    this.level.removeTile(blockTileToRemove, this.selectedTile.index + 1, false)
+                    this.level.getTileAt(blockTileToRemove.x, this.selectedTile.index + 1, true, this.blockLayer)!.setCollision(true, true, true, true)
                 } else if(backgroundTileToRemove !== undefined) {
                     this.level.removeTile(backgroundTileToRemove, 0, false)
                 }
@@ -136,6 +172,7 @@ export class LevelOne extends Scene
         // Back button to MainMenu
         this.backButton = new PageButton(this, this.blockLayer.getTopLeft().x - 75, this.blockLayer.getTopLeft().y + 5, 'Back', null, () => this.gotoMainMenu())
         this.add.existing(this.backButton)
+
     }
 
     update() {
@@ -162,6 +199,20 @@ export class LevelOne extends Scene
         // Actually setting the coin text
         this.infoText.setText('Total Coins: ' + this.collectedCoins +  '/' + this.totalCoins.toString())
         
+        const worldPoint = this.input.activePointer.positionToCamera(this.cameras.main) as Phaser.Math.Vector2
+
+        // Rounds down to nearest tile
+        const pointerTileX = this.blockPaletteMap.worldToTileX(worldPoint.x) as number
+        const pointerTileY = this.blockPaletteMap.worldToTileY(worldPoint.y) as number
+
+        // Snap to tile coordinates, but in world space
+        this.marker.x = this.blockPaletteMap.tileToWorldX(pointerTileX) as number
+        this.marker.y = this.blockPaletteMap.tileToWorldY(pointerTileY) as number
+
+        if (this.input.manager.activePointer.isDown)
+        {
+            this.selectedTile = this.blockPaletteMap.getTileAt(pointerTileX, pointerTileY) as Tilemaps.Tile;
+        }
     }
 
     getTilePositionFromPlayer(player: Physics.Arcade.Sprite, tilemap: Tilemaps.Tilemap, layer: Tilemaps.TilemapLayer, coinTiles: Tilemaps.Tile[]) {
