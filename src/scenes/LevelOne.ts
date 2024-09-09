@@ -1,5 +1,5 @@
 import { Scene, GameObjects, Physics, Types, Tilemaps } from 'phaser';
-import { Button, PageButton } from '../../public/assets/class/button';
+import { PageButton } from '../../public/assets/class/button';
 
 export class LevelOne extends Scene
 {
@@ -87,13 +87,9 @@ export class LevelOne extends Scene
         // Creates a group of blocks for physics
         this.blocks = this.physics.add.staticGroup();
 
-        // On click will place a "Block" (TODO: can only place block within map)
+        // On click will place a "Block"
         this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
-            const blockArray: Tilemaps.Tile[] = []
-            blockArray.forEach((tile: Tilemaps.Tile) => {
-                blockArray.push(tile)
-            });
-            if((pointer.x >= 0 && pointer.x <= this.levelWidth) && (pointer.y >= 0 && pointer.y <= this.levelHeight)) {
+            if((pointer.x >= this.blockLayer.getBottomLeft().x && pointer.x <= this.blockLayer.getBottomRight().x) && (pointer.y <= this.blockLayer.getBottomLeft().y && pointer.y >= this.blockLayer.getTopLeft().y)) {
                 const currentBlock = this.blocks.create(pointer.x, pointer.y, 'block') as Physics.Arcade.Sprite;
                 currentBlock.setDisplaySize(16, 16)
                 currentBlock.setSize(16, 16)
@@ -114,6 +110,7 @@ export class LevelOne extends Scene
         this.physics.add.collider(this.player, this.objectLayer)
         this.physics.add.collider(this.player, this.backgroundLayer)
 
+        // Physics for when a person jumps
         this.cursors.up.on('down', () => {
             if (this.player.body!.blocked.down)
             {
@@ -122,15 +119,17 @@ export class LevelOne extends Scene
         }, this);
         
         // Coin cointer text filler
-        this.infoText = this.add.text(560, 300, '')
+        this.infoText = this.add.text(this.blockLayer.getTopLeft().x, this.blockLayer.getTopLeft().y - 15, '')
 
         // Back button to MainMenu
-        this.backButton = new PageButton(this, 400, 500, 'Back', null, () => this.gotoMainMenu())
+        this.backButton = new PageButton(this, this.blockLayer.getTopLeft().x - 75, this.blockLayer.getTopLeft().y + 5, 'Back', null, () => this.gotoMainMenu())
         this.add.existing(this.backButton)
     }
 
     update() {
+        // Stops player from sliding right constantly. Not sure why this is
         this.player.setVelocityX(-10)
+        
         // Left Press Down
         if(this.cursors.left.isDown) {
             this.player.setVelocityX(-160)
@@ -192,7 +191,6 @@ export class LevelOne extends Scene
         if(coinTile !== null) {
             this.level.removeTile(coinTile, 7, false);
             this.collectedCoins = this.collectedCoins + 1;
-            console.log("collectedCoins", this.collectedCoins)
 
             this.coins = this.level.filterTiles((tile: Phaser.Tilemaps.Tile) => tile.index === 19) as Tilemaps.Tile[]
         }
