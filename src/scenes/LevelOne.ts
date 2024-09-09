@@ -71,9 +71,9 @@ export class LevelOne extends Scene
         this.level = this.make.tilemap({ key: 'levelone', tileWidth: 16, tileHeight: 16})
         this.blockPaletteMap = this.make.tilemap({tileHeight: 16, tileWidth: 16, height: 48, width: 144})
 
-        this.blockPaletteTileSetImage = this.blockPaletteMap.addTilesetImage('Palette', 'tiles')!
+        this.blockPaletteTileSetImage = this.blockPaletteMap.addTilesetImage('Palette', 'tiles') as Phaser.Tilemaps.Tileset
 
-        this.blockPaletteLayer = this.blockPaletteMap.createBlankLayer('Palette', this.blockPaletteTileSetImage)!
+        this.blockPaletteLayer = this.blockPaletteMap.createBlankLayer('Palette', this.blockPaletteTileSetImage) as Phaser.Tilemaps.TilemapLayer
 
         let blockTiles: number[][] = [];
 
@@ -103,9 +103,9 @@ export class LevelOne extends Scene
         this.tileSet = this.level.addTilesetImage('blockTiles', 'tiles') as Tilemaps.Tileset
 
         // Create and render layers
-        this.backgroundLayer = this.level.createLayer('Background', this.tileSet, ((this.screenWidth - this.levelWidth) / 2), ((this.screenHeight - this.levelHeight) / 2))!
-        this.blockLayer = this.level.createLayer('Blocks', this.tileSet, ((this.screenWidth - this.levelWidth) / 2), ((this.screenHeight - this.levelHeight) / 2))!
-        this.objectLayer = this.level.createLayer('Interactables', this.tileSet, ((this.screenWidth - this.levelWidth) / 2), ((this.screenHeight - this.levelHeight) / 2))!
+        this.backgroundLayer = this.level.createLayer('Background', this.tileSet, ((this.screenWidth - this.levelWidth) / 2), ((this.screenHeight - this.levelHeight) / 2)) as Phaser.Tilemaps.TilemapLayer
+        this.blockLayer = this.level.createLayer('Blocks', this.tileSet, ((this.screenWidth - this.levelWidth) / 2), ((this.screenHeight - this.levelHeight) / 2)) as Phaser.Tilemaps.TilemapLayer
+        this.objectLayer = this.level.createLayer('Interactables', this.tileSet, ((this.screenWidth - this.levelWidth) / 2), ((this.screenHeight - this.levelHeight) / 2)) as Phaser.Tilemaps.TilemapLayer
 
         // Filter coin tiles
         this.coins = this.level.filterTiles((tile: Phaser.Tilemaps.Tile) => tile.index === 19) as Tilemaps.Tile[]
@@ -217,8 +217,8 @@ export class LevelOne extends Scene
 
     getTilePositionFromPlayer(player: Physics.Arcade.Sprite, tilemap: Tilemaps.Tilemap, layer: Tilemaps.TilemapLayer, coinTiles: Tilemaps.Tile[]) {
         // Convert player world position to tilemap coordinates
-        const tileX = tilemap.worldToTileX(player.x)!
-        const tileY = tilemap.worldToTileY(player.y)!
+        const tileX = tilemap.worldToTileX(player.x) as number
+        const tileY = tilemap.worldToTileY(player.y) as number
         
         // Gets the initial tile at the tilemap coordinates, then converts to center for accuracy
         const tile1 = layer.getTileAt(tileX, tileY, true)
@@ -238,8 +238,8 @@ export class LevelOne extends Scene
         // If a tile exists, and the index of the current tile matches one found in the block array
         if (tile && (tile.index === tileIndex)) {
             // Convert tilemap coordinates back to world position
-            const tileWorldX = tilemap.tileToWorldX(tile.x)!
-            const tileWorldY = tilemap.tileToWorldY(tile.y)!
+            const tileWorldX = tilemap.tileToWorldX(tile.x) as number
+            const tileWorldY = tilemap.tileToWorldY(tile.y) as number
             
             return this.level.getTileAtWorldXY(tileWorldX, tileWorldY)
         } else {
@@ -250,8 +250,8 @@ export class LevelOne extends Scene
 
     getTilePositionFromMap(pointer: Phaser.Input.Pointer, tilemap: Tilemaps.Tilemap, layer: Tilemaps.TilemapLayer, tiles: Tilemaps.Tile[]) {
         // Convert pointer world position to tilemap coordinates
-        const tileX = tilemap.worldToTileX(pointer.x)!
-        const tileY = tilemap.worldToTileY(pointer.y)!
+        const tileX = tilemap.worldToTileX(pointer.x) as number
+        const tileY = tilemap.worldToTileY(pointer.y) as number
         
         // Gets the initial tile at the tilemap coordinates, then converts to center for accuracy
         const tile1 = layer.getTileAt(tileX, tileY, true)
@@ -268,7 +268,7 @@ export class LevelOne extends Scene
 
     hitPickup (coinTiles: Tilemaps.Tile[])
     {
-        const coinTile = this.getTilePositionFromPlayer(this.player, this.level, this.objectLayer, coinTiles)!
+        const coinTile = this.getTilePositionFromPlayer(this.player, this.level, this.objectLayer, coinTiles) as Tilemaps.Tile
         if(coinTile !== null) {
             this.level.removeTile(coinTile, 7, false);
             this.collectedCoins = this.collectedCoins + 1;
