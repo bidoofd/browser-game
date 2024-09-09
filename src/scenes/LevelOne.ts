@@ -74,8 +74,6 @@ export class LevelOne extends Scene
         this.blockLayer = this.level.createLayer('Blocks', this.tileSet, ((this.screenWidth - this.levelWidth) / 2), ((this.screenHeight - this.levelHeight) / 2))!
         this.objectLayer = this.level.createLayer('Interactables', this.tileSet, ((this.screenWidth - this.levelWidth) / 2), ((this.screenHeight - this.levelHeight) / 2))!
 
-        console.log("blockLayer", this.blockLayer)
-
         // Filter coin tiles
         this.coins = this.level.filterTiles((tile: Phaser.Tilemaps.Tile) => tile.index === 19) as Tilemaps.Tile[]
         this.totalCoins = this.coins.length
@@ -87,13 +85,26 @@ export class LevelOne extends Scene
         // Creates a group of blocks for physics
         this.blocks = this.physics.add.staticGroup();
 
-        // On click will place a "Block"
+        // Block placement logic (TODO: add collision to blocks that are placed ON TOP of a background)
         this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
+            const blockArray: Tilemaps.Tile[] = []
+            this.blockLayer.forEachTile((tile: Tilemaps.Tile) => {
+                blockArray.push(tile)
+            });
+            const backgroundArray: Tilemaps.Tile[] = []
+            this.backgroundLayer.forEachTile((tile: Tilemaps.Tile) => {
+                if(tile.index !== -1) {
+                    backgroundArray.push(tile)
+                }
+            });
             if((pointer.x >= this.blockLayer.getBottomLeft().x && pointer.x <= this.blockLayer.getBottomRight().x) && (pointer.y <= this.blockLayer.getBottomLeft().y && pointer.y >= this.blockLayer.getTopLeft().y)) {
-                const currentBlock = this.blocks.create(pointer.x, pointer.y, 'block') as Physics.Arcade.Sprite;
-                currentBlock.setDisplaySize(16, 16)
-                currentBlock.setSize(16, 16)
-                currentBlock.setOrigin(0.8)
+                const blockTileToRemove = this.getTilePositionFromMap(pointer, this.level, this.blockLayer, blockArray)
+                const backgroundTileToRemove = this.getTilePositionFromMap(pointer, this.level, this.backgroundLayer, backgroundArray)
+                if(blockTileToRemove !== undefined) {
+                    this.level.removeTile(blockTileToRemove!, 14, false)
+                } else if(backgroundTileToRemove !== undefined) {
+                    this.level.removeTile(backgroundTileToRemove!, 14, false)
+                }
             }
         }, this);
 
@@ -129,7 +140,7 @@ export class LevelOne extends Scene
     update() {
         // Stops player from sliding right constantly. Not sure why this is
         this.player.setVelocityX(-10)
-        
+
         // Left Press Down
         if(this.cursors.left.isDown) {
             this.player.setVelocityX(-160)
@@ -157,12 +168,12 @@ export class LevelOne extends Scene
         const tileX = tilemap.worldToTileX(player.x)!
         const tileY = tilemap.worldToTileY(player.y)!
         
-        // Get the tile at the tilemap coordinates
+        // Gets the initial tile at the tilemap coordinates, then converts to center for accuracy
         const tile1 = layer.getTileAt(tileX, tileY, true)
         const tileCenterX = tile1.getCenterX()
         const tileCenterY = tile1.getCenterY()
         const tile = layer.getTileAt(tilemap.worldToTileX(tileCenterX)!, tilemap.worldToTileY(tileCenterY)!, true)
-
+        
         // set tile index to find
         let tileIndex = 0
 
@@ -172,7 +183,7 @@ export class LevelOne extends Scene
             }
         }
         
-        // If a tile exists, and the index of the current tile matches one found in the coin array
+        // If a tile exists, and the index of the current tile matches one found in the block array
         if (tile && (tile.index === tileIndex)) {
             // Convert tilemap coordinates back to world position
             const tileWorldX = tilemap.tileToWorldX(tile.x)!
@@ -182,6 +193,24 @@ export class LevelOne extends Scene
         } else {
             console.log('No tile at player position');
             return null;
+        }
+    }
+
+    getTilePositionFromMap(pointer: Phaser.Input.Pointer, tilemap: Tilemaps.Tilemap, layer: Tilemaps.TilemapLayer, tiles: Tilemaps.Tile[]) {
+        // Convert pointer world position to tilemap coordinates
+        const tileX = tilemap.worldToTileX(pointer.x)!
+        const tileY = tilemap.worldToTileY(pointer.y)!
+        
+        // Gets the initial tile at the tilemap coordinates, then converts to center for accuracy
+        const tile1 = layer.getTileAt(tileX, tileY, true)
+        const tileCenterX = tile1.getCenterX()
+        const tileCenterY = tile1.getCenterY()
+        const tile = layer.getTileAt(tilemap.worldToTileX(tileCenterX)!, tilemap.worldToTileY(tileCenterY)!, true)
+
+        for(const findTile of tiles) {
+            if(findTile === tile) {
+                return findTile
+            }
         }
     }
 
