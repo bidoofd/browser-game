@@ -134,23 +134,6 @@ export class LevelOne extends Scene
             }
         });
 
-        // Block placement logic
-        this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
-            // Block placement logic
-            if(this.selectedTile !== undefined && this.selectedTile !== null) {
-                if((pointer.x >= this.blockLayer.getBottomLeft().x && pointer.x <= this.blockLayer.getBottomRight().x) && (pointer.y <= this.blockLayer.getBottomLeft().y && pointer.y >= this.blockLayer.getTopLeft().y)) {
-                    const blockTileToRemove = this.getTilePositionFromMap(pointer, this.level, this.blockLayer, blockArray)
-                    const backgroundTileToRemove = this.getTilePositionFromMap(pointer, this.level, this.backgroundLayer, backgroundArray)
-                    if(blockTileToRemove !== undefined) {
-                        this.level.removeTile(blockTileToRemove, this.selectedTile.index + 1, false)
-                        this.level.getTileAt(blockTileToRemove.x, this.selectedTile.index + 1, true, this.blockLayer)!.setCollision(true, true, true, true)
-                    } else if(backgroundTileToRemove !== undefined) {
-                        this.level.removeTile(backgroundTileToRemove, 0, false)
-                    }
-                }
-            }
-        }, this);
-
         // Adds player in physics
         this.player = this.physics.add.sprite(this.level.tileToWorldX((this.startTile[0].x))! + 8, this.level.tileToWorldY(this.startTile[0].y)!, 'player')
         this.player.setVelocity(800)
@@ -169,6 +152,32 @@ export class LevelOne extends Scene
             if (this.player.body!.blocked.down)
             {
                 this.player.setVelocityY(-200);
+            }
+        }, this);
+
+        // Block placement logic
+        this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
+            // Block placement logic
+            if(this.selectedTile !== undefined && this.selectedTile !== null) {
+                if((pointer.x >= this.blockLayer.getBottomLeft().x && pointer.x <= this.blockLayer.getBottomRight().x) && (pointer.y <= this.blockLayer.getBottomLeft().y && pointer.y >= this.blockLayer.getTopLeft().y)) {
+                    const blockTileToRemove = this.getTilePositionFromMap(pointer, this.level, this.blockLayer, blockArray) as Tilemaps.Tile
+                    const backgroundTileToRemove = this.getTilePositionFromMap(pointer, this.level, this.backgroundLayer, backgroundArray) as Tilemaps.Tile
+
+                    console.log("selectedTile", this.selectedTile)
+
+                    console.log("block", blockTileToRemove)
+                    console.log("bg", backgroundTileToRemove)
+
+                    if(blockTileToRemove !== undefined && (backgroundTileToRemove.index === -1 && this.selectedTile.index > 9)) {
+                        this.level.removeTile(blockTileToRemove, this.selectedTile.index + 1, false)
+                        this.level.getTileAt(blockTileToRemove.x, blockTileToRemove.y, true, this.blockLayer)!.setCollision(true, true, true, true)
+                    } else if(backgroundTileToRemove !== undefined && (blockTileToRemove.index === -1 && this.selectedTile.index < 9)) {
+                        this.level.removeTile(backgroundTileToRemove, this.selectedTile.index + 1, false)   
+                    } else {
+                        this.level.removeTile(blockTileToRemove, this.selectedTile.index + 1, false)
+                        this.level.getTileAt(blockTileToRemove.x, blockTileToRemove.y, true, this.blockLayer)!.setCollision(true, true, true, true)
+                    }
+                }
             }
         }, this);
         
