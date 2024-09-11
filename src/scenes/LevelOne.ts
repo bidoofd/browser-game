@@ -69,7 +69,16 @@ export class LevelOne extends Scene
     {
         // Create level tilemap and block tileset
         this.level = this.make.tilemap({ key: 'levelone', tileWidth: 16, tileHeight: 16})
-        this.blockPaletteMap = this.make.tilemap({tileHeight: 16, tileWidth: 16, height: 48, width: 144})
+        this.levelWidth = this.level.widthInPixels
+        this.levelHeight = this.level.heightInPixels
+
+        const sceneCenterX = ((this.screenWidth - this.levelWidth) / 2)
+        const sceneCenterY = ((this.screenHeight - this.levelHeight) / 2)
+
+        console.log("sceneCenterX", sceneCenterX)
+        console.log("sceneCenterY", sceneCenterY)
+
+        this.blockPaletteMap = this.make.tilemap({key: 'blockpalette', tileHeight: 16, tileWidth: 16, height: 3, width: 9})
 
         this.blockPaletteTileSetImage = this.blockPaletteMap.addTilesetImage('Palette', 'tiles') as Phaser.Tilemaps.Tileset
 
@@ -78,27 +87,22 @@ export class LevelOne extends Scene
         let blockTiles: number[][] = [];
 
         let value = 0;
-        for (let row = 0; row < this.blockPaletteMap.height / this.blockPaletteMap.tileHeight; row++) {
+        for (let row = 0; row < 3; row++) {
             blockTiles[row] = [];  // Initialize the row
-            for (let col = 0; col < this.blockPaletteMap.width / this.blockPaletteMap.tileWidth; col++) {
+            for (let col = 0; col < 9; col++) {
                 blockTiles[row][col] = value;
                 value++;  // Increment the value for the next tile
             }
         }
-    
+
         // Set the tile data to the layer
-        this.blockPaletteLayer.putTilesAt(blockTiles, 35, 15);
-
-        // Block outline hover
-        this.marker = this.add.graphics()
-        this.marker.lineStyle(2, 0x000000, 1);
-        this.marker.strokeRect(0, 0, this.blockPaletteMap.tileWidth, this.blockPaletteMap.tileHeight);
-
-        this.cameras.main.setBounds(this.blockPaletteLayer.getTopLeft().x, this.blockPaletteLayer.getTopLeft().y, this.blockPaletteMap.widthInPixels, this.blockPaletteMap.heightInPixels);
+        this.blockPaletteLayer.putTilesAt(blockTiles, 0, 0);
+        console.log("width", ((this.screenWidth - this.levelWidth) / 2))
+        console.log("height", ((this.screenHeight - this.levelHeight) / 2))
+        this.blockPaletteLayer.setX(sceneCenterX)
+        this.blockPaletteLayer.setY(sceneCenterY - 75)
 
         // Sets the level width and height based on the current level in pixels
-        this.levelWidth = this.level.widthInPixels
-        this.levelHeight = this.level.heightInPixels
         
         this.tileSet = this.level.addTilesetImage('blockTiles', 'tiles') as Tilemaps.Tileset
 
@@ -118,29 +122,31 @@ export class LevelOne extends Scene
         // Creates a group of blocks for physics
         this.blocks = this.physics.add.staticGroup();
 
+        // Convert the tilemaps into arrays
+        const blockArray: Tilemaps.Tile[] = []
+        this.blockLayer.forEachTile((tile: Tilemaps.Tile) => {
+            blockArray.push(tile)
+        });
+        const backgroundArray: Tilemaps.Tile[] = []
+        this.backgroundLayer.forEachTile((tile: Tilemaps.Tile) => {
+            if(tile.index !== -1) {
+                backgroundArray.push(tile)
+            }
+        });
+
         // Block placement logic
         this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
-            // Convert the tilemaps into arrays
-            const blockArray: Tilemaps.Tile[] = []
-            this.blockLayer.forEachTile((tile: Tilemaps.Tile) => {
-                blockArray.push(tile)
-            });
-            const backgroundArray: Tilemaps.Tile[] = []
-            this.backgroundLayer.forEachTile((tile: Tilemaps.Tile) => {
-                if(tile.index !== -1) {
-                    backgroundArray.push(tile)
-                }
-            });
-
             // Block placement logic
-            if((pointer.x >= this.blockLayer.getBottomLeft().x && pointer.x <= this.blockLayer.getBottomRight().x) && (pointer.y <= this.blockLayer.getBottomLeft().y && pointer.y >= this.blockLayer.getTopLeft().y)) {
-                const blockTileToRemove = this.getTilePositionFromMap(pointer, this.level, this.blockLayer, blockArray)
-                const backgroundTileToRemove = this.getTilePositionFromMap(pointer, this.level, this.backgroundLayer, backgroundArray)
-                if(blockTileToRemove !== undefined) {
-                    this.level.removeTile(blockTileToRemove, this.selectedTile.index + 1, false)
-                    this.level.getTileAt(blockTileToRemove.x, this.selectedTile.index + 1, true, this.blockLayer)!.setCollision(true, true, true, true)
-                } else if(backgroundTileToRemove !== undefined) {
-                    this.level.removeTile(backgroundTileToRemove, 0, false)
+            if(this.selectedTile !== undefined && this.selectedTile !== null) {
+                if((pointer.x >= this.blockLayer.getBottomLeft().x && pointer.x <= this.blockLayer.getBottomRight().x) && (pointer.y <= this.blockLayer.getBottomLeft().y && pointer.y >= this.blockLayer.getTopLeft().y)) {
+                    const blockTileToRemove = this.getTilePositionFromMap(pointer, this.level, this.blockLayer, blockArray)
+                    const backgroundTileToRemove = this.getTilePositionFromMap(pointer, this.level, this.backgroundLayer, backgroundArray)
+                    if(blockTileToRemove !== undefined) {
+                        this.level.removeTile(blockTileToRemove, this.selectedTile.index + 1, false)
+                        this.level.getTileAt(blockTileToRemove.x, this.selectedTile.index + 1, true, this.blockLayer)!.setCollision(true, true, true, true)
+                    } else if(backgroundTileToRemove !== undefined) {
+                        this.level.removeTile(backgroundTileToRemove, 0, false)
+                    }
                 }
             }
         }, this);
@@ -173,6 +179,11 @@ export class LevelOne extends Scene
         this.backButton = new PageButton(this, this.blockLayer.getTopLeft().x - 75, this.blockLayer.getTopLeft().y + 5, 'Back', null, () => this.gotoMainMenu())
         this.add.existing(this.backButton)
 
+        // Block outline hover
+        this.marker = this.add.graphics()
+        this.marker.lineStyle(2, 0x000000, 1);
+        this.marker.strokeRect(0, 0, this.blockPaletteMap.tileWidth, this.blockPaletteMap.tileHeight);
+
     }
 
     update() {
@@ -201,17 +212,47 @@ export class LevelOne extends Scene
         
         const worldPoint = this.input.activePointer.positionToCamera(this.cameras.main) as Phaser.Math.Vector2
 
-        // Rounds down to nearest tile
-        const pointerTileX = this.blockPaletteMap.worldToTileX(worldPoint.x) as number
-        const pointerTileY = this.blockPaletteMap.worldToTileY(worldPoint.y) as number
+        if((this.input.manager.activePointer.x >= this.blockPaletteLayer.getBottomLeft().x && this.input.manager.activePointer.x <= this.blockPaletteLayer.getBottomRight().x) && (this.input.manager.activePointer.y <= this.blockPaletteLayer.getBottomLeft().y && this.input.manager.activePointer.y >= this.blockPaletteLayer.getTopLeft().y)) {
+            // Rounds down to nearest tile
+            const pointerTileX = this.blockPaletteMap.worldToTileX(worldPoint.x) as number
+            const pointerTileY = this.blockPaletteMap.worldToTileY(worldPoint.y) as number
 
-        // Snap to tile coordinates, but in world space
-        this.marker.x = this.blockPaletteMap.tileToWorldX(pointerTileX) as number
-        this.marker.y = this.blockPaletteMap.tileToWorldY(pointerTileY) as number
+            // Snap to tile coordinates, but in world space
+            this.marker.x = this.blockPaletteMap.tileToWorldX(pointerTileX) as number
+            this.marker.y = this.blockPaletteMap.tileToWorldY(pointerTileY) as number
 
-        if (this.input.manager.activePointer.isDown)
-        {
-            this.selectedTile = this.blockPaletteMap.getTileAt(pointerTileX, pointerTileY) as Tilemaps.Tile;
+            if (this.input.manager.activePointer.isDown)
+            {
+                this.selectedTile = this.blockPaletteMap.getTileAt(pointerTileX, pointerTileY) as Tilemaps.Tile;
+            }
+        }
+
+        if((this.input.manager.activePointer.x >= this.blockLayer.getBottomLeft().x && this.input.manager.activePointer.x <= this.blockLayer.getBottomRight().x) && (this.input.manager.activePointer.y <= this.blockLayer.getBottomLeft().y && this.input.manager.activePointer.y >= this.blockLayer.getTopLeft().y)) {
+            // Rounds down to nearest tile
+            const pointerTileX = this.level.worldToTileX(worldPoint.x) as number
+            const pointerTileY = this.level.worldToTileY(worldPoint.y) as number
+
+            // Snap to tile coordinates, but in world space
+            this.marker.x = this.level.tileToWorldX(pointerTileX) as number
+            this.marker.y = this.level.tileToWorldY(pointerTileY) as number
+        }
+        if((this.input.manager.activePointer.x >= this.backgroundLayer.getBottomLeft().x && this.input.manager.activePointer.x <= this.backgroundLayer.getBottomRight().x) && (this.input.manager.activePointer.y <= this.backgroundLayer.getBottomLeft().y && this.input.manager.activePointer.y >= this.backgroundLayer.getTopLeft().y)) {
+            // Rounds down to nearest tile
+            const pointerTileX = this.level.worldToTileX(worldPoint.x) as number
+            const pointerTileY = this.level.worldToTileY(worldPoint.y) as number
+
+            // Snap to tile coordinates, but in world space
+            this.marker.x = this.level.tileToWorldX(pointerTileX) as number
+            this.marker.y = this.level.tileToWorldY(pointerTileY) as number
+        }
+        if((this.input.manager.activePointer.x >= this.objectLayer.getBottomLeft().x && this.input.manager.activePointer.x <= this.objectLayer.getBottomRight().x) && (this.input.manager.activePointer.y <= this.objectLayer.getBottomLeft().y && this.input.manager.activePointer.y >= this.objectLayer.getTopLeft().y)) {
+            // Rounds down to nearest tile
+            const pointerTileX = this.level.worldToTileX(worldPoint.x) as number
+            const pointerTileY = this.level.worldToTileY(worldPoint.y) as number
+
+            // Snap to tile coordinates, but in world space
+            this.marker.x = this.level.tileToWorldX(pointerTileX) as number
+            this.marker.y = this.level.tileToWorldY(pointerTileY) as number
         }
     }
 
