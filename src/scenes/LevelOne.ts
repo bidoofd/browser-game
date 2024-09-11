@@ -133,6 +133,12 @@ export class LevelOne extends Scene
                 backgroundArray.push(tile)
             }
         });
+        const interactableArray: Tilemaps.Tile[] = []
+        this.objectLayer.forEachTile((tile: Tilemaps.Tile) => {
+            if(tile.index !== -1) {
+                interactableArray.push(tile)
+            }
+        });
 
         // Adds player in physics
         this.player = this.physics.add.sprite(this.level.tileToWorldX((this.startTile[0].x))! + 8, this.level.tileToWorldY(this.startTile[0].y)!, 'player')
@@ -158,24 +164,58 @@ export class LevelOne extends Scene
         // Block placement logic
         this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
             // Block placement logic
-            if(this.selectedTile !== undefined && this.selectedTile !== null) {
+            if(this.selectedTile) {
                 if((pointer.x >= this.blockLayer.getBottomLeft().x && pointer.x <= this.blockLayer.getBottomRight().x) && (pointer.y <= this.blockLayer.getBottomLeft().y && pointer.y >= this.blockLayer.getTopLeft().y)) {
+                    // Cases to remove types of tile
                     const blockTileToRemove = this.getTilePositionFromMap(pointer, this.level, this.blockLayer, blockArray) as Tilemaps.Tile
                     const backgroundTileToRemove = this.getTilePositionFromMap(pointer, this.level, this.backgroundLayer, backgroundArray) as Tilemaps.Tile
-
-                    console.log("selectedTile", this.selectedTile)
+                    const objectTileToRemove = this.getTilePositionFromMap(pointer, this.level, this.objectLayer, interactableArray) as Tilemaps.Tile
 
                     console.log("block", blockTileToRemove)
                     console.log("bg", backgroundTileToRemove)
+                    console.log("object", objectTileToRemove)
 
-                    if(blockTileToRemove !== undefined && (backgroundTileToRemove.index === -1 && this.selectedTile.index > 9)) {
+                    if((blockTileToRemove === undefined && objectTileToRemove === undefined) || (backgroundTileToRemove === undefined && objectTileToRemove === undefined)) {
+                        console.log("clickling same thing twice")
+                    }
+
+                    // Removes blocks based on tile index and replaces with the selected block type. So far the max rows is 4, and columns is 8. Background tiles are on row 1
+                    // Replacing normal blocks with normal blocks
+                    else if(blockTileToRemove && ((backgroundTileToRemove.index === -1 && objectTileToRemove.index === -1) && (this.selectedTile.index > 8 && this.selectedTile.index < 18))) {
                         this.level.removeTile(blockTileToRemove, this.selectedTile.index + 1, false)
                         this.level.getTileAt(blockTileToRemove.x, blockTileToRemove.y, true, this.blockLayer)!.setCollision(true, true, true, true)
-                    } else if(backgroundTileToRemove !== undefined && (blockTileToRemove.index === -1 && this.selectedTile.index < 9)) {
+                    // Replacing interactables with normal blocks
+                    } else if(objectTileToRemove && (this.selectedTile.index > 8 && this.selectedTile.index < 18)) {
+                        this.level.removeTile(objectTileToRemove, this.selectedTile.index + 1, false)
+                        const newBlockTile = this.level.getTileAt(blockTileToRemove.x, blockTileToRemove.y, true, this.objectLayer) as Phaser.Tilemaps.Tile
+                        newBlockTile.setCollision(true, true, true, true)
+                        this.level.putTileAt(newBlockTile, newBlockTile.x, newBlockTile.y, true, this.blockLayer)
+
+                        // TODO: determine how to remove old block tile from object layer
+                        // additionally need to remove the tile from the array
+                        //console.log(interactableArray)
+                    }
+                    // Replacing background blocks with background blocks
+                    else if(backgroundTileToRemove && ((blockTileToRemove.index === -1 && (objectTileToRemove === undefined || objectTileToRemove.index === -1)) && (this.selectedTile.index < 9))) {
                         this.level.removeTile(backgroundTileToRemove, this.selectedTile.index + 1, false)   
-                    } else {
+                    
+                    // Replacing interactables with interactables
+                    } else if(objectTileToRemove && ((blockTileToRemove.index === -1 && backgroundTileToRemove.index === -1)) && (this.selectedTile.index === 19)) {
+                        this.level.removeTile(objectTileToRemove, this.selectedTile.index + 1, false)
+                    
+                    // Replacing blocks with interactables (blocked by replacing interactables with normal blocks?)
+                    } else if(blockTileToRemove && (this.selectedTile.index === 19)) {
+                        this.level.removeTile(blockTileToRemove, this.selectedTile.index + 1, false)
+                        const newInteractableTile = this.level.getTileAt(objectTileToRemove.x, objectTileToRemove.y, true, this.blockLayer) as Phaser.Tilemaps.Tile
+                        this.level.putTileAt(newInteractableTile, newInteractableTile.x, newInteractableTile.y, true, this.objectLayer)
+                    }
+                    // Everything else?
+                    else {
                         this.level.removeTile(blockTileToRemove, this.selectedTile.index + 1, false)
                         this.level.getTileAt(blockTileToRemove.x, blockTileToRemove.y, true, this.blockLayer)!.setCollision(true, true, true, true)
+                        if(this.selectedTile.index === 19) {
+                            this.totalCoins = this.totalCoins + 1
+                        }
                     }
                 }
             }
