@@ -1,5 +1,6 @@
 import { Scene, GameObjects, Physics, Types, Tilemaps } from 'phaser';
 import { PageButton } from '../../public/assets/class/button';
+import { Helper } from '../../public/assets/helpers/helpers';
 
 export class LevelOne extends Scene
 {
@@ -39,10 +40,13 @@ export class LevelOne extends Scene
 
     private marker: GameObjects.Graphics
     private selectedTile: Tilemaps.Tile
+
+    private helper: Helper
     
     constructor ()
     {
         super('LevelOne');
+        this.helper = new Helper()
     }
 
     preload() {
@@ -72,44 +76,18 @@ export class LevelOne extends Scene
         this.levelWidth = this.level.widthInPixels
         this.levelHeight = this.level.heightInPixels
 
+        // Set up variables for screen measurements
         const sceneCenterX = ((this.screenWidth - this.levelWidth) / 2)
         const sceneCenterY = ((this.screenHeight - this.levelHeight) / 2)
-
-        console.log("sceneCenterX", sceneCenterX)
-        console.log("sceneCenterY", sceneCenterY)
-
-        this.blockPaletteMap = this.make.tilemap({key: 'blockpalette', tileHeight: 16, tileWidth: 16, height: 3, width: 9})
-
-        this.blockPaletteTileSetImage = this.blockPaletteMap.addTilesetImage('Palette', 'tiles') as Phaser.Tilemaps.Tileset
-
-        this.blockPaletteLayer = this.blockPaletteMap.createBlankLayer('Palette', this.blockPaletteTileSetImage) as Phaser.Tilemaps.TilemapLayer
-
-        let blockTiles: number[][] = [];
-
-        let value = 0;
-        for (let row = 0; row < 3; row++) {
-            blockTiles[row] = [];  // Initialize the row
-            for (let col = 0; col < 9; col++) {
-                blockTiles[row][col] = value;
-                value++;  // Increment the value for the next tile
-            }
-        }
-
-        // Set the tile data to the layer
-        this.blockPaletteLayer.putTilesAt(blockTiles, 0, 0);
-        console.log("width", ((this.screenWidth - this.levelWidth) / 2))
-        console.log("height", ((this.screenHeight - this.levelHeight) / 2))
-        this.blockPaletteLayer.setX(sceneCenterX)
-        this.blockPaletteLayer.setY(sceneCenterY - 75)
 
         // Sets the level width and height based on the current level in pixels
         
         this.tileSet = this.level.addTilesetImage('blockTiles', 'tiles') as Tilemaps.Tileset
 
         // Create and render layers
-        this.backgroundLayer = this.level.createLayer('Background', this.tileSet, ((this.screenWidth - this.levelWidth) / 2), ((this.screenHeight - this.levelHeight) / 2)) as Phaser.Tilemaps.TilemapLayer
-        this.blockLayer = this.level.createLayer('Blocks', this.tileSet, ((this.screenWidth - this.levelWidth) / 2), ((this.screenHeight - this.levelHeight) / 2)) as Phaser.Tilemaps.TilemapLayer
-        this.objectLayer = this.level.createLayer('Interactables', this.tileSet, ((this.screenWidth - this.levelWidth) / 2), ((this.screenHeight - this.levelHeight) / 2)) as Phaser.Tilemaps.TilemapLayer
+        this.backgroundLayer = this.level.createLayer('Background', this.tileSet, sceneCenterX, sceneCenterY) as Phaser.Tilemaps.TilemapLayer
+        this.blockLayer = this.level.createLayer('Blocks', this.tileSet, sceneCenterX, sceneCenterY) as Phaser.Tilemaps.TilemapLayer
+        this.objectLayer = this.level.createLayer('Interactables', this.tileSet, sceneCenterX, sceneCenterY) as Phaser.Tilemaps.TilemapLayer
 
         // Filter coin tiles
         this.coins = this.level.filterTiles((tile: Phaser.Tilemaps.Tile) => tile.index === 19) as Tilemaps.Tile[]
@@ -118,27 +96,35 @@ export class LevelOne extends Scene
         // Filter start and end tiles (maybe have it as one tile?)
         this.startTile = this.level.filterTiles((tile: Phaser.Tilemaps.Tile) => tile.index === 20) as Tilemaps.Tile[]
         this.endTile = this.level.filterTiles((tile: Phaser.Tilemaps.Tile) => tile.index === 21) as Tilemaps.Tile[]
+
+        // Create block palette
+        this.blockPaletteMap = this.make.tilemap({key: 'blockpalette', tileHeight: 16, tileWidth: 16, height: 3, width: 9})
+        this.blockPaletteTileSetImage = this.blockPaletteMap.addTilesetImage('Palette', 'tiles') as Phaser.Tilemaps.Tileset
+        this.blockPaletteLayer = this.blockPaletteMap.createBlankLayer('Palette', this.blockPaletteTileSetImage) as Phaser.Tilemaps.TilemapLayer
+        let blockTiles: number[][] = [];
+
+        // Assigns the blocks to the block palette tiles. This goes by the width and height of the TILES in the tileset
+        let value = 0;
+        for (let row = 0; row < this.blockPaletteMap.height; row++) {
+            blockTiles[row] = [];  // Initialize the row
+            for (let col = 0; col < this.blockPaletteMap.width; col++) {
+                blockTiles[row][col] = value;
+                value++;  // Increment the value for the next tile
+            }
+        }
+
+        // Set the tile data to the layer
+        this.blockPaletteLayer.putTilesAt(blockTiles, 0, 0);
+        this.blockPaletteLayer.setX(sceneCenterX)
+        this.blockPaletteLayer.setY(sceneCenterY - 75)
         
         // Creates a group of blocks for physics
         this.blocks = this.physics.add.staticGroup();
 
         // Convert the tilemaps into arrays
-        const blockArray: Tilemaps.Tile[] = []
-        this.blockLayer.forEachTile((tile: Tilemaps.Tile) => {
-            blockArray.push(tile)
-        });
-        const backgroundArray: Tilemaps.Tile[] = []
-        this.backgroundLayer.forEachTile((tile: Tilemaps.Tile) => {
-            if(tile.index !== -1) {
-                backgroundArray.push(tile)
-            }
-        });
-        const interactableArray: Tilemaps.Tile[] = []
-        this.objectLayer.forEachTile((tile: Tilemaps.Tile) => {
-            if(tile.index !== -1) {
-                interactableArray.push(tile)
-            }
-        });
+        const blockArray = this.helper.tileMapToArray(this.blockLayer)
+        const backgroundArray = this.helper.tileMapToArray(this.backgroundLayer)
+        const objectArray = this.helper.tileMapToArray(this.objectLayer)
 
         // Adds player in physics
         this.player = this.physics.add.sprite(this.level.tileToWorldX((this.startTile[0].x))! + 8, this.level.tileToWorldY(this.startTile[0].y)!, 'player')
@@ -163,25 +149,27 @@ export class LevelOne extends Scene
 
         // Block placement logic
         this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
-            // Block placement logic
             if(this.selectedTile) {
                 if((pointer.x >= this.blockLayer.getBottomLeft().x && pointer.x <= this.blockLayer.getBottomRight().x) && (pointer.y <= this.blockLayer.getBottomLeft().y && pointer.y >= this.blockLayer.getTopLeft().y)) {
                     // Cases to remove types of tile
-                    const blockTileToRemove = this.getTilePositionFromMap(pointer, this.level, this.blockLayer, blockArray) as Tilemaps.Tile
-                    const backgroundTileToRemove = this.getTilePositionFromMap(pointer, this.level, this.backgroundLayer, backgroundArray) as Tilemaps.Tile
-                    const objectTileToRemove = this.getTilePositionFromMap(pointer, this.level, this.objectLayer, interactableArray) as Tilemaps.Tile
-
-                    console.log("block", blockTileToRemove)
-                    console.log("bg", backgroundTileToRemove)
-                    console.log("object", objectTileToRemove)
-
-                    if((blockTileToRemove === undefined && objectTileToRemove === undefined) || (backgroundTileToRemove === undefined && objectTileToRemove === undefined)) {
-                        console.log("clickling same thing twice")
-                    }
+                    const blockTileToRemove = this.helper.getTilePositionFromMap(pointer, this.level, this.blockLayer, blockArray) as Tilemaps.Tile
+                    const backgroundTileToRemove = this.helper.getTilePositionFromMap(pointer, this.level, this.backgroundLayer, backgroundArray) as Tilemaps.Tile
+                    const objectTileToRemove = this.helper.getTilePositionFromMap(pointer, this.level, this.objectLayer, objectArray) as Tilemaps.Tile
 
                     // Removes blocks based on tile index and replaces with the selected block type. So far the max rows is 4, and columns is 8. Background tiles are on row 1
-                    // Replacing normal blocks with normal blocks
-                    else if(blockTileToRemove && ((backgroundTileToRemove.index === -1 && objectTileToRemove.index === -1) && (this.selectedTile.index > 8 && this.selectedTile.index < 18))) {
+                    // TODO: Handle start and finish tiles
+
+                    if(!this.selectedTile && (blockTileToRemove === undefined && objectTileToRemove === undefined) || (backgroundTileToRemove === undefined && objectTileToRemove === undefined)) {
+                        console.log("clicking same thing twice")
+                    }
+
+                    // Placing block normally
+                    else if(blockTileToRemove && (objectTileToRemove && objectTileToRemove.index !== 19) && (!backgroundTileToRemove || backgroundTileToRemove) && (this.selectedTile.index > 8 && this.selectedTile.index < 18)) {
+                        this.level.putTileAt(this.selectedTile.index + 1, blockTileToRemove.x, blockTileToRemove.y)!.setCollision(true, true, true, true)
+                    }
+
+                    // Replacing normal blocks or interactables with normal blocks
+                    else if(blockTileToRemove && (((!backgroundTileToRemove || backgroundTileToRemove.index === -1) && objectTileToRemove.index === -1) && (this.selectedTile.index > 8 && this.selectedTile.index < 18))) {
                         this.level.removeTile(blockTileToRemove, this.selectedTile.index + 1, false)
                         this.level.getTileAt(blockTileToRemove.x, blockTileToRemove.y, true, this.blockLayer)!.setCollision(true, true, true, true)
                     // Replacing interactables with normal blocks
@@ -191,30 +179,52 @@ export class LevelOne extends Scene
                         newBlockTile.setCollision(true, true, true, true)
                         this.level.putTileAt(newBlockTile, newBlockTile.x, newBlockTile.y, true, this.blockLayer)
 
-                        // TODO: determine how to remove old block tile from object layer
-                        // additionally need to remove the tile from the array
-                        //console.log(interactableArray)
+                        // Removes interactable tile from array
+                            for(let tileIndex = 0; tileIndex < objectArray.length; tileIndex++) {
+                                if(objectArray[tileIndex] === objectTileToRemove) {
+                                    objectArray.splice(tileIndex, -1)
+                                    this.totalCoins = this.totalCoins - 1
+                                }
+                            }
                     }
                     // Replacing background blocks with background blocks
-                    else if(backgroundTileToRemove && ((blockTileToRemove.index === -1 && (objectTileToRemove === undefined || objectTileToRemove.index === -1)) && (this.selectedTile.index < 9))) {
-                        this.level.removeTile(backgroundTileToRemove, this.selectedTile.index + 1, false)   
+                    else if(backgroundTileToRemove && blockTileToRemove && objectTileToRemove && ((blockTileToRemove.index === -1 && (objectTileToRemove === undefined || objectTileToRemove.index === -1)) && (this.selectedTile.index < 9))) {
+                        this.level.removeTile(backgroundTileToRemove, this.selectedTile.index + 1, false)  
                     
                     // Replacing interactables with interactables
-                    } else if(objectTileToRemove && ((blockTileToRemove.index === -1 && backgroundTileToRemove.index === -1)) && (this.selectedTile.index === 19)) {
-                        this.level.removeTile(objectTileToRemove, this.selectedTile.index + 1, false)
+                    } else if((!blockTileToRemove || blockTileToRemove.index == -1) && (!objectTileToRemove || objectTileToRemove.index === 19) && (((!backgroundTileToRemove || backgroundTileToRemove.index === -1 || backgroundTileToRemove))) && (this.selectedTile.index === 18)) {
+                        if(objectTileToRemove) {
+                            this.level.removeTile(objectTileToRemove, this.selectedTile.index + 1, false)
+                        }
                     
                     // Replacing blocks with interactables (blocked by replacing interactables with normal blocks?)
-                    } else if(blockTileToRemove && (this.selectedTile.index === 19)) {
+                    } else if(blockTileToRemove && (!objectTileToRemove || objectTileToRemove.index !== 19) && (this.selectedTile.index === 18)) {
                         this.level.removeTile(blockTileToRemove, this.selectedTile.index + 1, false)
-                        const newInteractableTile = this.level.getTileAt(objectTileToRemove.x, objectTileToRemove.y, true, this.blockLayer) as Phaser.Tilemaps.Tile
-                        this.level.putTileAt(newInteractableTile, newInteractableTile.x, newInteractableTile.y, true, this.objectLayer)
-                    }
-                    // Everything else?
-                    else {
-                        this.level.removeTile(blockTileToRemove, this.selectedTile.index + 1, false)
-                        this.level.getTileAt(blockTileToRemove.x, blockTileToRemove.y, true, this.blockLayer)!.setCollision(true, true, true, true)
-                        if(this.selectedTile.index === 19) {
-                            this.totalCoins = this.totalCoins + 1
+                        this.objectLayer.removeTileAt(blockTileToRemove.x, blockTileToRemove.y)
+                        this.level.putTileAt(this.selectedTile.index + 1, blockTileToRemove.x, blockTileToRemove.y, true, this.objectLayer)
+                        this.coins = this.level.filterTiles((tile: Phaser.Tilemaps.Tile) => tile.index === 19) as Tilemaps.Tile[]
+                        this.totalCoins = this.totalCoins + 1
+                    
+                    // When someone collects a coin, then replaces with a block after collecting coin
+                    } else if(!blockTileToRemove && !objectTileToRemove) {
+                        this.level.putTileAt(this.selectedTile.index + 1, this.level.getTileAtWorldXY(pointer.x, pointer.y)!.x, this.level.getTileAtWorldXY(pointer.x, pointer.y)!.y)!.setCollision(true, true, true, true)
+                        this.coins = this.level.filterTiles((tile: Phaser.Tilemaps.Tile) => tile.index === 19) as Tilemaps.Tile[]
+                        this.totalCoins = this.totalCoins - 1
+                    
+                    // Putting a background tile behind a coin
+                    } else if((this.selectedTile.index < 9) && (!backgroundTileToRemove || backgroundTileToRemove.index === -1 || backgroundTileToRemove) && (objectTileToRemove.index === 19) && blockTileToRemove.index === -1) {
+                        this.level.putTileAt(this.selectedTile.index + 1, objectTileToRemove.x || backgroundTileToRemove.x, objectTileToRemove.y || backgroundTileToRemove.y, false, this.backgroundLayer)
+                    } else if(this.selectedTile.index >= 21){
+                        if(this.objectLayer.getTileAtWorldXY(pointer.x, pointer.y)) {
+                            const removedTile = this.level.removeTileAtWorldXY(pointer.x, pointer.y, false, false, undefined, this.objectLayer)
+                            if(removedTile!.index == 19) {
+                                this.coins = this.level.filterTiles((tile: Phaser.Tilemaps.Tile) => tile.index === 19) as Tilemaps.Tile[]
+                                this.totalCoins = this.totalCoins -1
+                            }
+                        } else if (this.blockLayer.getTileAtWorldXY(pointer.x, pointer.y)) {
+                            this.level.removeTileAtWorldXY(pointer.x, pointer.y, false, false, undefined, this.blockLayer)
+                        } else if(this.backgroundLayer.getTileAtWorldXY(pointer.x, pointer.y)) {
+                            this.level.removeTileAtWorldXY(pointer.x, pointer.y, false, false, undefined, this.backgroundLayer)
                         }
                     }
                 }
@@ -225,7 +235,7 @@ export class LevelOne extends Scene
         this.infoText = this.add.text(this.blockLayer.getTopLeft().x, this.blockLayer.getTopLeft().y - 15, '')
 
         // Back button to MainMenu
-        this.backButton = new PageButton(this, this.blockLayer.getTopLeft().x - 75, this.blockLayer.getTopLeft().y + 5, 'Back', null, () => this.gotoMainMenu())
+        this.backButton = new PageButton(this, this.blockLayer.getTopLeft().x - 75, this.blockLayer.getTopLeft().y + 5, 'Back', null, () => this.scene.start('MainMenu'))
         this.add.existing(this.backButton)
 
         // Block outline hover
@@ -261,6 +271,7 @@ export class LevelOne extends Scene
         
         const worldPoint = this.input.activePointer.positionToCamera(this.cameras.main) as Phaser.Math.Vector2
 
+        // Pointer event for block palette
         if((this.input.manager.activePointer.x >= this.blockPaletteLayer.getBottomLeft().x && this.input.manager.activePointer.x <= this.blockPaletteLayer.getBottomRight().x) && (this.input.manager.activePointer.y <= this.blockPaletteLayer.getBottomLeft().y && this.input.manager.activePointer.y >= this.blockPaletteLayer.getTopLeft().y)) {
             // Rounds down to nearest tile
             const pointerTileX = this.blockPaletteMap.worldToTileX(worldPoint.x) as number
@@ -276,6 +287,7 @@ export class LevelOne extends Scene
             }
         }
 
+        // Pointer highlight for block layer
         if((this.input.manager.activePointer.x >= this.blockLayer.getBottomLeft().x && this.input.manager.activePointer.x <= this.blockLayer.getBottomRight().x) && (this.input.manager.activePointer.y <= this.blockLayer.getBottomLeft().y && this.input.manager.activePointer.y >= this.blockLayer.getTopLeft().y)) {
             // Rounds down to nearest tile
             const pointerTileX = this.level.worldToTileX(worldPoint.x) as number
@@ -285,6 +297,8 @@ export class LevelOne extends Scene
             this.marker.x = this.level.tileToWorldX(pointerTileX) as number
             this.marker.y = this.level.tileToWorldY(pointerTileY) as number
         }
+
+        // Pointer highlight for background layer
         if((this.input.manager.activePointer.x >= this.backgroundLayer.getBottomLeft().x && this.input.manager.activePointer.x <= this.backgroundLayer.getBottomRight().x) && (this.input.manager.activePointer.y <= this.backgroundLayer.getBottomLeft().y && this.input.manager.activePointer.y >= this.backgroundLayer.getTopLeft().y)) {
             // Rounds down to nearest tile
             const pointerTileX = this.level.worldToTileX(worldPoint.x) as number
@@ -294,6 +308,8 @@ export class LevelOne extends Scene
             this.marker.x = this.level.tileToWorldX(pointerTileX) as number
             this.marker.y = this.level.tileToWorldY(pointerTileY) as number
         }
+
+        // Pointer highlight event for object layer
         if((this.input.manager.activePointer.x >= this.objectLayer.getBottomLeft().x && this.input.manager.activePointer.x <= this.objectLayer.getBottomRight().x) && (this.input.manager.activePointer.y <= this.objectLayer.getBottomLeft().y && this.input.manager.activePointer.y >= this.objectLayer.getTopLeft().y)) {
             // Rounds down to nearest tile
             const pointerTileX = this.level.worldToTileX(worldPoint.x) as number
@@ -305,69 +321,14 @@ export class LevelOne extends Scene
         }
     }
 
-    getTilePositionFromPlayer(player: Physics.Arcade.Sprite, tilemap: Tilemaps.Tilemap, layer: Tilemaps.TilemapLayer, coinTiles: Tilemaps.Tile[]) {
-        // Convert player world position to tilemap coordinates
-        const tileX = tilemap.worldToTileX(player.x) as number
-        const tileY = tilemap.worldToTileY(player.y) as number
-        
-        // Gets the initial tile at the tilemap coordinates, then converts to center for accuracy
-        const tile1 = layer.getTileAt(tileX, tileY, true)
-        const tileCenterX = tile1.getCenterX()
-        const tileCenterY = tile1.getCenterY()
-        const tile = layer.getTileAt(tilemap.worldToTileX(tileCenterX)!, tilemap.worldToTileY(tileCenterY)!, true)
-        
-        // set tile index to find
-        let tileIndex = 0
-
-        for(const findTile of coinTiles) {
-            if(findTile === tile) {
-                tileIndex = findTile.index
-            }
-        }
-        
-        // If a tile exists, and the index of the current tile matches one found in the block array
-        if (tile && (tile.index === tileIndex)) {
-            // Convert tilemap coordinates back to world position
-            const tileWorldX = tilemap.tileToWorldX(tile.x) as number
-            const tileWorldY = tilemap.tileToWorldY(tile.y) as number
-            
-            return this.level.getTileAtWorldXY(tileWorldX, tileWorldY)
-        } else {
-            console.log('No tile at player position');
-            return null;
-        }
-    }
-
-    getTilePositionFromMap(pointer: Phaser.Input.Pointer, tilemap: Tilemaps.Tilemap, layer: Tilemaps.TilemapLayer, tiles: Tilemaps.Tile[]) {
-        // Convert pointer world position to tilemap coordinates
-        const tileX = tilemap.worldToTileX(pointer.x) as number
-        const tileY = tilemap.worldToTileY(pointer.y) as number
-        
-        // Gets the initial tile at the tilemap coordinates, then converts to center for accuracy
-        const tile1 = layer.getTileAt(tileX, tileY, true)
-        const tileCenterX = tile1.getCenterX()
-        const tileCenterY = tile1.getCenterY()
-        const tile = layer.getTileAt(tilemap.worldToTileX(tileCenterX)!, tilemap.worldToTileY(tileCenterY)!, true)
-
-        for(const findTile of tiles) {
-            if(findTile === tile) {
-                return findTile
-            }
-        }
-    }
-
     hitPickup (coinTiles: Tilemaps.Tile[])
     {
-        const coinTile = this.getTilePositionFromPlayer(this.player, this.level, this.objectLayer, coinTiles) as Tilemaps.Tile
+        const coinTile = this.helper.getTilePositionFromPlayer(this.level, this.player, this.level, this.objectLayer, coinTiles) as Tilemaps.Tile
         if(coinTile !== null) {
-            this.level.removeTile(coinTile, 7, false);
+            this.level.removeTile(coinTile, this.level.getTileAt(coinTile.x, coinTile.y, false, this.backgroundLayer)!.index, false);
             this.collectedCoins = this.collectedCoins + 1;
 
             this.coins = this.level.filterTiles((tile: Phaser.Tilemaps.Tile) => tile.index === 19) as Tilemaps.Tile[]
         }
-    }
-
-    gotoMainMenu() {
-        this.scene.start('MainMenu')
     }
 }
