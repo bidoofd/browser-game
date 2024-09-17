@@ -257,16 +257,12 @@ export class LevelFive extends Scene
         // Stops player from sliding right constantly. Not sure why this is
         this.player.setVelocityX(-10)
 
-        if(this.cursors.right.isDown && this.cursors.left.isDown) {
-            this.player.setVelocityX(0)
-        }
-
         // Left Press Down
-        if(this.cursors.left.isDown && !this.cursors.right.isDown) {
+        if(this.cursors.left.isDown) {
             this.player.setVelocityX(-160)
         }
         // Right Press Down
-        else if(this.cursors.right.isDown && !this.cursors.left.isDown) {
+        else if(this.cursors.right.isDown) {
             this.player.setVelocityX(160)
         }
 
