@@ -12,3 +12,4 @@ Run npm i && npm run dev
 - Tiles are 16x16
 - Font for logo is Bad Mofo
 - Font for buttons is Courier size 16px
+- SOMEHOW FIX THIS PLAYER KEEP MOVING RIGHT

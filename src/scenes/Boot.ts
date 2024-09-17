@@ -15,6 +15,8 @@ export class Boot extends Scene
         this.load.image('block', 'assets/images/blueBlock.png');
         this.load.image('ground', 'assets/images/redBlock.png');
         this.load.image('logo', '/assets/images/logo.png')
+        this.load.image('level_selector', '/assets/images/level_selector.png')
+        this.load.image('game_over', '/assets/images/game_over.png')
     }
 
     create ()

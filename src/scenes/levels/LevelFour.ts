@@ -1,8 +1,8 @@
 import { Scene, GameObjects, Physics, Types, Tilemaps } from 'phaser';
-import { PageButton } from '../../public/assets/class/button';
-import { Helper } from '../../public/assets/helpers/helpers';
+import { PageButton } from '../../../public/assets/class/button';
+import { Helper } from '../../../public/assets/helpers/helpers';
 
-export class LevelOne extends Scene
+export class LevelFour extends Scene
 {
     // Initialize variables
 
@@ -45,7 +45,7 @@ export class LevelOne extends Scene
     
     constructor ()
     {
-        super('LevelOne');
+        super('LevelFour');
         this.helper = new Helper()
     }
 
@@ -66,13 +66,13 @@ export class LevelOne extends Scene
         this.load.image('tiles', 'assets/images/tiles.png');
 
         // Loads tile level data
-        this.load.tilemapTiledJSON('levelone', 'assets/tilemapdata/level1.json');
+        this.load.tilemapTiledJSON('levelfour', 'assets/tilemapdata/level4.json');
     }
 
     create ()
     {
         // Create level tilemap and block tileset
-        this.level = this.make.tilemap({ key: 'levelone', tileWidth: 16, tileHeight: 16})
+        this.level = this.make.tilemap({ key: 'levelfour', tileWidth: 16, tileHeight: 16})
         this.levelWidth = this.level.widthInPixels
         this.levelHeight = this.level.heightInPixels
 
@@ -143,7 +143,7 @@ export class LevelOne extends Scene
         this.cursors.up.on('down', () => {
             if (this.player.body!.blocked.down)
             {
-                this.player.setVelocityY(-200);
+                this.player.setVelocityY(-240);
             }
         }, this);
 
@@ -246,6 +246,14 @@ export class LevelOne extends Scene
     }
 
     update() {
+        // Updated jump/falling logic
+        // TODO: fix when a player is holding up above an empty block
+        if(!this.cursors.up.isDown && this.player.body?.blocked.down === true && this.player.body.velocity.y === 0 && this.player.body.blocked.left === false && this.player.body.blocked.right === false) {
+            this.player.setVelocityY(200)
+        } else if(this.cursors.up.isDown  && this.player.body?.blocked.down === true && this.player.body.velocity.y === 0 && this.player.body.blocked.left === false && this.player.body.blocked.right === false) {
+            this.player.setVelocityY(-240)
+        }
+        
         // Stops player from sliding right constantly. Not sure why this is
         this.player.setVelocityX(-10)
 

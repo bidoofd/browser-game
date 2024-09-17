@@ -4,7 +4,7 @@ import { Button } from '../../public/assets/class/button'
 
 export class MainMenu extends Scene
 {
-    private levelOne: Button;
+    private startButton: Button;
 
     constructor ()
     {
@@ -15,11 +15,11 @@ export class MainMenu extends Scene
     {
         this.add.image((this.game.canvas.width / 2), (this.game.canvas.height / 2) - 100, 'logo')
 
-        this.levelOne = new Button(this, (this.game.canvas.width / 2) - 50, (this.game.canvas.height / 2) - 25, 'Level One', null, () => this.gotoLevelOne());
-        this.add.existing(this.levelOne);
+        this.startButton = new Button(this, (this.game.canvas.width / 2) - 50, (this.game.canvas.height / 2) - 25, 'Start Game', null, () => this.gotoLevelSelector());
+        this.add.existing(this.startButton);
         }
 
-        gotoLevelOne() {
-            this.scene.start('LevelOne')
+        gotoLevelSelector() {
+            this.scene.start('LevelSelector')
           }
 }

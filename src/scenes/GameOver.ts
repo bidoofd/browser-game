@@ -1,10 +1,9 @@
 import { Scene } from 'phaser';
+import { PageButton } from '../../public/assets/class/button';
 
 export class GameOver extends Scene
 {
-    camera: Phaser.Cameras.Scene2D.Camera;
-    background: Phaser.GameObjects.Image;
-    gameover_text : Phaser.GameObjects.Text;
+    private mainMenuButton: PageButton
 
     constructor ()
     {
@@ -13,23 +12,14 @@ export class GameOver extends Scene
 
     create ()
     {
-        this.camera = this.cameras.main
-        this.camera.setBackgroundColor(0xff0000);
+        this.add.image((this.game.canvas.width / 2), (this.game.canvas.height / 2) - 100, 'game_over')
 
-        this.background = this.add.image(512, 384, 'background');
-        this.background.setAlpha(0.5);
+        this.mainMenuButton= new PageButton(this, (this.game.canvas.width / 2) - 50, (this.game.canvas.height / 2) - 25, 'Main Menu', null, () => this.gotoMainMenu());
+        this.add.existing(this.mainMenuButton);
+    }
 
-        this.gameover_text = this.add.text(512, 384, 'Game Over', {
-            fontFamily: 'Arial Black', fontSize: 64, color: '#ffffff',
-            stroke: '#000000', strokeThickness: 8,
-            align: 'center'
-        });
-        this.gameover_text.setOrigin(0.5);
-
-        this.input.once('pointerdown', () => {
-
-            this.scene.start('MainMenu');
-
-        });
+    gotoMainMenu() {
+        this.scene.start('MainMenu')
     }
 }
+

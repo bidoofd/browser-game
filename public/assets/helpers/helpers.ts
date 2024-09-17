@@ -7,6 +7,9 @@ export class Helper {
     layer: Phaser.Tilemaps.TilemapLayer
     coinTiles: Phaser.Tilemaps.Tile[] 
     blockLayer: Phaser.Tilemaps.TilemapLayer
+    currentScene: Phaser.Scene
+    goScene: Phaser.Scene
+    prevScene: Phaser.Scene
 
 
     getTilePositionFromPlayer(currentLevel: Tilemaps.Tilemap, player: Physics.Arcade.Sprite, tilemap: Tilemaps.Tilemap, layer: Tilemaps.TilemapLayer, coinTiles: Tilemaps.Tile[]) {

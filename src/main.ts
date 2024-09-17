@@ -2,7 +2,12 @@ import { Boot } from './scenes/Boot';
 import { Game as MainGame } from './scenes/Game';
 import { GameOver } from './scenes/GameOver';
 import { MainMenu } from './scenes/MainMenu';
-import { LevelOne } from './scenes/LevelOne';
+import { LevelOne } from './scenes/levels/LevelOne';
+import { LevelTwo } from './scenes/levels/LevelTwo';
+import { LevelThree } from './scenes/levels/LevelThree';
+import { LevelFour } from './scenes/levels/LevelFour';
+import { LevelFive } from './scenes/levels/LevelFive';
+import { LevelSelector } from './scenes/LevelSelector';
 
 import { Game, Types } from "phaser";
 
@@ -27,7 +32,12 @@ const config: Types.Core.GameConfig = {
     scene: [
         Boot,
         MainMenu,
+        LevelSelector,
         LevelOne,
+        LevelTwo,
+        LevelThree,
+        LevelFour,
+        LevelFive,
         MainGame,
         GameOver
     ]
