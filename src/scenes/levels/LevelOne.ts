@@ -139,6 +139,13 @@ export class LevelOne extends Scene
         this.physics.add.collider(this.player, this.objectLayer)
         this.physics.add.collider(this.player, this.backgroundLayer)
 
+        // Physics for when a person jumps
+        this.cursors.up.on('down', () => {
+            if (this.player.body!.blocked.down)
+            {
+                this.player.setVelocityY(-200);
+            }
+        }, this);
 
         // Block placement logic
         this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
@@ -246,7 +253,7 @@ export class LevelOne extends Scene
         } else if(this.cursors.up.isDown  && this.player.body?.blocked.down === true && this.player.body.velocity.y === 0 && this.player.body.blocked.left === false && this.player.body.blocked.right === false) {
             this.player.setVelocityY(-240)
         }
-        
+
         // Stops player from sliding right constantly. Not sure why this is
 
         this.player.setVelocityX(-10)
