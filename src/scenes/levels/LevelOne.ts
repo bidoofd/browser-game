@@ -258,11 +258,6 @@ export class LevelOne extends Scene
 
         this.player.setVelocityX(-10)
 
-        // Physics for when a person jumps
-        if(this.cursors.up.isDown && this.player.body!.blocked.down) {
-            this.player.setVelocityY(-200)
-        }
-
         // Left Press Down
         if(this.cursors.left.isDown) {
             this.player.setVelocityX(-160)
