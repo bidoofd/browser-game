@@ -128,7 +128,6 @@ export class LevelTwo extends Scene
 
         // Adds player in physics
         this.player = this.physics.add.sprite(this.level.tileToWorldX((this.startTile[0].x))! + 8, this.level.tileToWorldY(this.startTile[0].y)!, 'player')
-        this.player.setVelocity(800)
         this.player.setCollideWorldBounds(true)
         this.player.setDisplaySize(16, 16)
 
@@ -138,14 +137,6 @@ export class LevelTwo extends Scene
         this.physics.add.collider(this.player, this.blocks)
         this.physics.add.collider(this.player, this.objectLayer)
         this.physics.add.collider(this.player, this.backgroundLayer)
-
-        // Physics for when a person jumps
-        this.cursors.up.on('down', () => {
-            if (this.player.body!.blocked.down)
-            {
-                this.player.setVelocityY(-200);
-            }
-        }, this);
 
         // Block placement logic
         this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
