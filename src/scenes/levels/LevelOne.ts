@@ -244,25 +244,29 @@ export class LevelOne extends Scene
     }
 
     update() {
+        // Stops player from sliding right constantly. Not sure why this is
+        this.player.setVelocityX(-10)
+
         // Updated jump/falling logic
-        // TODO: fix when a player is holding up above an empty block
+        // TODO: fix when a player is holding up above an empty block?
         if(!this.cursors.up.isDown && this.player.body?.blocked.down === true && this.player.body.velocity.y === 0 && this.player.body.blocked.left === false && this.player.body.blocked.right === false) {
             this.player.setVelocityY(200)
         } else if(this.cursors.up.isDown  && this.player.body?.blocked.down === true && this.player.body.velocity.y === 0 && this.player.body.blocked.left === false && this.player.body.blocked.right === false) {
             this.player.setVelocityY(-240)
-        }
-
-        // Stops player from sliding right constantly. Not sure why this is
-
-        this.player.setVelocityX(-10)
-
-        // Left Press Down
-        if(this.cursors.left.isDown) {
-            this.player.setVelocityX(-160)
-        }
-        // Right Press Down
-        else if(this.cursors.right.isDown) {
+        } else if((this.cursors.right.isDown && this.cursors.left.isDown) || (this.cursors.left.isDown && this.cursors.right.isDown)) {
+            console.log("3")
+            this.player.setVelocityX(-10)
+        // Combinational movement
+        } else if(this.cursors.right.isDown && this.cursors.up.isDown) {
             this.player.setVelocityX(160)
+            if(this.player.body?.blocked.down) {
+                this.player.setVelocityY(-240)
+            }
+        } else if(this.cursors.left.isDown && this.cursors.up.isDown) {
+            this.player.setVelocityX(-160)
+            if(this.player.body?.blocked.down) {
+                this.player.setVelocityY(-240)
+            }
         }
 
         // Coin collection

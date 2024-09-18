@@ -40,7 +40,6 @@ export class Helper {
             
             return currentLevel.getTileAtWorldXY(tileWorldX, tileWorldY)
         } else {
-            console.log('No tile at player position');
             return null;
         }
     }
