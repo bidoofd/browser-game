@@ -24,6 +24,7 @@ export class LevelFive extends Scene
 
     // Text variables
     private infoText: GameObjects.Text
+    private timerText: GameObjects.Text
 
     // Button variables
     private backButton: PageButton
@@ -42,6 +43,9 @@ export class LevelFive extends Scene
     private selectedTile: Tilemaps.Tile
 
     private helper: Helper
+
+    private timer: Phaser.Time.TimerEvent
+    private timerSecondCount: number = 0
     
     constructor ()
     {
@@ -137,14 +141,6 @@ export class LevelFive extends Scene
         this.physics.add.collider(this.player, this.blocks)
         this.physics.add.collider(this.player, this.objectLayer)
         this.physics.add.collider(this.player, this.backgroundLayer)
-
-        // Physics for when a person jumps
-        /*this.cursors.up.on('down', () => {
-            if (this.player.body!.blocked.down)
-            {
-                this.player.setVelocityY(-240);
-            }
-        }, this);*/
 
         // Block placement logic
         this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
@@ -242,6 +238,10 @@ export class LevelFive extends Scene
         this.marker.lineStyle(2, 0x000000, 1);
         this.marker.strokeRect(0, 0, this.blockPaletteMap.tileWidth, this.blockPaletteMap.tileHeight);
 
+        // Timer
+        this.timerText = this.add.text(this.blockLayer.getBottomLeft().x, this.blockLayer.getBottomLeft().y + 15, '')
+        this.timer = this.time.addEvent({delay: 1000, callback: () => {this.timerSecondCount++}, callbackScope: this, loop: true})
+
     }
 
     update() {
@@ -270,11 +270,14 @@ export class LevelFive extends Scene
 
         // When the player gets all coins and reaches the end tile
         if(this.collectedCoins === this.totalCoins && (this.physics.world.overlapTiles(this.player, this.endTile))) {
-            this.scene.start('GameOver');
+            this.timer.paused === true
+            const timerTime = this.timerSecondCount.toString() + "." + this.timer.getElapsedSeconds().toString().substring(2,6)
+            this.scene.start('GameOver', {timerTime: timerTime});
         }
 
         // Actually setting the coin text
         this.infoText.setText('Total Coins: ' + this.collectedCoins +  '/' + this.totalCoins.toString())
+        this.timerText.setText(`Timer: ${this.timerSecondCount}.${this.timer.getElapsedSeconds().toString().substring(2,6)}`)
         
         const worldPoint = this.input.activePointer.positionToCamera(this.cameras.main) as Phaser.Math.Vector2
 
