@@ -1,6 +1,7 @@
 import { Scene, GameObjects, Physics, Types, Tilemaps } from 'phaser';
 import { PageButton } from '../../../public/assets/class/button';
 import { Helper } from '../../../public/assets/helpers/helpers';
+import { setupTilemapLayers, filterTilesByIndex, createBlockPalette } from '../../../public/assets/helpers/maphelper';
 
 export class LevelTwo extends Scene
 {
@@ -12,7 +13,6 @@ export class LevelTwo extends Scene
     private WASDcursors: Types.Input.Keyboard.CursorKeys
 
     private level: Tilemaps.Tilemap
-    private tileSet: Tilemaps.Tileset
     private coins: Tilemaps.Tile[]
     private startTile: Tilemaps.Tile[]
     private endTile: Tilemaps.Tile[]
@@ -37,7 +37,6 @@ export class LevelTwo extends Scene
     private levelHeight: number
 
     private blockPaletteMap: Tilemaps.Tilemap
-    private blockPaletteTileSetImage: Tilemaps.Tileset
     private blockPaletteLayer: Tilemaps.TilemapLayer
 
     private marker: GameObjects.Graphics
@@ -93,42 +92,25 @@ export class LevelTwo extends Scene
         const sceneCenterY = ((this.screenHeight - this.levelHeight) / 2)
 
         // Sets the level width and height based on the current level in pixels
-        
-        this.tileSet = this.level.addTilesetImage('blockTiles', 'tiles') as Tilemaps.Tileset
+
+        const levelMap = setupTilemapLayers(this.level, 'tiles', sceneCenterX, sceneCenterY);
 
         // Create and render layers
-        this.backgroundLayer = this.level.createLayer('Background', this.tileSet, sceneCenterX, sceneCenterY) as Phaser.Tilemaps.TilemapLayer
-        this.blockLayer = this.level.createLayer('Blocks', this.tileSet, sceneCenterX, sceneCenterY) as Phaser.Tilemaps.TilemapLayer
-        this.objectLayer = this.level.createLayer('Interactables', this.tileSet, sceneCenterX, sceneCenterY) as Phaser.Tilemaps.TilemapLayer
+        this.backgroundLayer = levelMap.backgroundLayer
+        this.blockLayer = levelMap.blockLayer
+        this.objectLayer = levelMap.objectLayer
 
         // Filter coin tiles
-        this.coins = this.level.filterTiles((tile: Phaser.Tilemaps.Tile) => tile.index === 19) as Tilemaps.Tile[]
-        this.totalCoins = this.coins.length
+        this.coins = filterTilesByIndex(this.level, 19);
+        this.totalCoins = this.coins.length;
 
-        // Filter start and end tiles (maybe have it as one tile?)
-        this.startTile = this.level.filterTiles((tile: Phaser.Tilemaps.Tile) => tile.index === 20) as Tilemaps.Tile[]
-        this.endTile = this.level.filterTiles((tile: Phaser.Tilemaps.Tile) => tile.index === 21) as Tilemaps.Tile[]
+        // Filter start and end tiles
+        this.startTile = filterTilesByIndex(this.level, 20);
+        this.endTile = filterTilesByIndex(this.level, 21);
 
-        // Create block palette
-        this.blockPaletteMap = this.make.tilemap({key: 'blockpalette', tileHeight: 16, tileWidth: 16, height: 3, width: 9})
-        this.blockPaletteTileSetImage = this.blockPaletteMap.addTilesetImage('Palette', 'tiles') as Phaser.Tilemaps.Tileset
-        this.blockPaletteLayer = this.blockPaletteMap.createBlankLayer('Palette', this.blockPaletteTileSetImage) as Phaser.Tilemaps.TilemapLayer
-        let blockTiles: number[][] = [];
-
-        // Assigns the blocks to the block palette tiles. This goes by the width and height of the TILES in the tileset
-        let value = 0;
-        for (let row = 0; row < this.blockPaletteMap.height; row++) {
-            blockTiles[row] = [];  // Initialize the row
-            for (let col = 0; col < this.blockPaletteMap.width; col++) {
-                blockTiles[row][col] = value;
-                value++;  // Increment the value for the next tile
-            }
-        }
-
-        // Set the tile data to the layer
-        this.blockPaletteLayer.putTilesAt(blockTiles, 0, 0);
-        this.blockPaletteLayer.setX(sceneCenterX)
-        this.blockPaletteLayer.setY(sceneCenterY - 75)
+        const blockPalette = createBlockPalette(this, 'blockpalette', 16, 16, 9, 3, sceneCenterX, sceneCenterY - 75);
+        this.blockPaletteLayer = blockPalette.layer
+        this.blockPaletteMap = blockPalette.blockPaletteMap
         
         // Creates a group of blocks for physics
         this.blocks = this.physics.add.staticGroup();

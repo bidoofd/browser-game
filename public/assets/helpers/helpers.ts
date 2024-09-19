@@ -1,4 +1,4 @@
-import { Scene, GameObjects, Physics, Types, Tilemaps } from 'phaser';
+import { Physics, Tilemaps } from 'phaser';
 
 export class Helper {
 
