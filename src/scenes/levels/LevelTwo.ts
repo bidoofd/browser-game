@@ -230,7 +230,10 @@ export class LevelTwo extends Scene
         this.infoText = this.add.text(this.blockLayer.getTopLeft().x, this.blockLayer.getTopLeft().y - 15, '')
 
         // Back button to MainMenu
-        this.backButton = new PageButton(this, this.blockLayer.getTopLeft().x - 75, this.blockLayer.getTopLeft().y + 5, 'Back', null, () => this.scene.start('MainMenu'))
+        this.backButton = new PageButton(this, this.blockLayer.getTopLeft().x - 75, this.blockLayer.getTopLeft().y + 5, 'Back', null, () => {this.scene.start('MainMenu')
+            this.timer.reset({delay: 1000, callback: () => {this.timerSecondCount++}, callbackScope: this, loop: true})
+            this.timerSecondCount = 0
+        })
         this.add.existing(this.backButton)
 
         // Block outline hover
