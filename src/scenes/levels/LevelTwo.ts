@@ -9,6 +9,7 @@ export class LevelTwo extends Scene
     private blocks: Physics.Arcade.StaticGroup
     private player: Physics.Arcade.Sprite
     private cursors: Types.Input.Keyboard.CursorKeys
+    private WASDcursors: Types.Input.Keyboard.CursorKeys
 
     private level: Tilemaps.Tilemap
     private tileSet: Tilemaps.Tileset
@@ -54,6 +55,13 @@ export class LevelTwo extends Scene
     }
 
     preload() {
+
+        this.WASDcursors = this.input.keyboard?.addKeys({
+            'up': Phaser.Input.Keyboard.KeyCodes.W,
+            'down': Phaser.Input.Keyboard.KeyCodes.S,
+            'left': Phaser.Input.Keyboard.KeyCodes.A,
+            'right': Phaser.Input.Keyboard.KeyCodes.D
+        }) as Types.Input.Keyboard.CursorKeys
 
         // Sets the screenheight and width variables
         this.screenHeight = this.sys.game.canvas.height
@@ -253,20 +261,27 @@ export class LevelTwo extends Scene
 
         // Updated jump/falling logic
         // TODO: fix when a player is holding up above an empty block?
-        if(!this.cursors.up.isDown && this.player.body?.blocked.down === true && this.player.body.velocity.y === 0 && this.player.body.blocked.left === false && this.player.body.blocked.right === false) {
+        if((!this.cursors.up.isDown || !this.WASDcursors.up.isDown) && this.player.body?.blocked.down === true && this.player.body.velocity.y === 0 && this.player.body.blocked.left === false && this.player.body.blocked.right === false) {
+            console.log("1")
             this.player.setVelocityY(200)
-        } else if(this.cursors.up.isDown  && this.player.body?.blocked.down === true && this.player.body.velocity.y === 0 && this.player.body.blocked.left === false && this.player.body.blocked.right === false) {
+        } else if((this.cursors.up.isDown || this.WASDcursors.up.isDown) && this.player.body?.blocked.down === true) {
+            console.log("2")
             this.player.setVelocityY(-240)
-        } else if((this.cursors.right.isDown && this.cursors.left.isDown) || (this.cursors.left.isDown && this.cursors.right.isDown)) {
+        }
+
+        if(((this.cursors.right.isDown && this.cursors.left.isDown) || (this.WASDcursors.right.isDown && this.WASDcursors.left.isDown)) || ((this.cursors.left.isDown && this.cursors.right.isDown) || (this.WASDcursors.left.isDown && this.WASDcursors.right.isDown))) {
             console.log("3")
             this.player.setVelocityX(-10)
+        
         // Combinational movement
-        } else if(this.cursors.right.isDown && this.cursors.up.isDown) {
+        } else if((this.cursors.right.isDown && this.cursors.up.isDown) || (this.WASDcursors.right.isDown && this.WASDcursors.up.isDown)) {
+            console.log("4")
             this.player.setVelocityX(160)
             if(this.player.body?.blocked.down) {
                 this.player.setVelocityY(-240)
             }
-        } else if(this.cursors.left.isDown && this.cursors.up.isDown) {
+        } else if((this.cursors.left.isDown && this.cursors.up.isDown) || (this.WASDcursors.left.isDown && this.WASDcursors.up.isDown)) {
+            console.log("5")
             this.player.setVelocityX(-160)
             if(this.player.body?.blocked.down) {
                 this.player.setVelocityY(-240)
@@ -274,10 +289,12 @@ export class LevelTwo extends Scene
         }
 
         // Basic movement logic left and right
-        if(this.cursors.left.isDown) {
+        if(this.cursors.left.isDown || this.WASDcursors.left.isDown) {
             this.player.setVelocityX(-160)
-        } else if(this.cursors.right.isDown) {
+        } else if(this.cursors.right.isDown || this.WASDcursors.right.isDown) {
             this.player.setVelocityX(160)
+        } else if((this.cursors.up.isDown || this.WASDcursors.up.isDown) && this.player.body?.blocked.down === true) {
+            this.player.setVelocityY(-240)
         }
 
         // Coin collection
