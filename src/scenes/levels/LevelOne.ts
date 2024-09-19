@@ -229,7 +229,7 @@ export class LevelOne extends Scene
         this.infoText = this.add.text(this.blockLayer.getTopLeft().x, this.blockLayer.getTopLeft().y - 15, '')
 
         // Back button to MainMenu
-        this.backButton = new PageButton(this, this.blockLayer.getTopLeft().x - 75, this.blockLayer.getTopLeft().y + 5, 'Back', null, () => this.scene.start('MainMenu'))
+        this.backButton = new PageButton(this, this.blockLayer.getTopLeft().x - 75, this.blockLayer.getTopLeft().y + 5, 'Back', null, () => {this.scene.start('MainMenu'); this.timer.reset({delay: 1000, callback: () => {this.timerSecondCount++}, callbackScope: this, loop: true})})
         this.add.existing(this.backButton)
 
         // Block outline hover
@@ -267,6 +267,13 @@ export class LevelOne extends Scene
             if(this.player.body?.blocked.down) {
                 this.player.setVelocityY(-240)
             }
+        }
+
+        // Basic movement logic left and right
+        if(this.cursors.left.isDown) {
+            this.player.setVelocityX(-160)
+        } else if(this.cursors.right.isDown) {
+            this.player.setVelocityX(160)
         }
 
         // Coin collection

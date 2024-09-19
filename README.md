@@ -3,7 +3,11 @@
 Run npm i && npm run dev
 
 #### TODO:
+
+--- Definitely need to scale down level files/modularise them
+
 - Implement combinational player movement logic
+    - Implement different types of movement
 - Implement Block Palette to replace tiles within map
     - Implement start and finish tile logic
 - Implement Timer

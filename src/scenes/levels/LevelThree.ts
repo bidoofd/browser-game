@@ -270,6 +270,13 @@ export class LevelThree extends Scene
             }
         }
 
+        // Basic movement logic left and right
+        if(this.cursors.left.isDown) {
+            this.player.setVelocityX(-160)
+        } else if(this.cursors.right.isDown) {
+            this.player.setVelocityX(160)
+        }
+
         // Coin collection
         this.physics.world.overlapTiles(this.player, this.coins, this.hitPickup.bind(this, (this.coins)), undefined, this);
 
