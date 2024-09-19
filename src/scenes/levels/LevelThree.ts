@@ -261,34 +261,33 @@ export class LevelThree extends Scene
 
         // Updated jump/falling logic
         // TODO: fix when a player is holding up above an empty block?
+
+        // Falling Logic
         if((!this.cursors.up.isDown || !this.WASDcursors.up.isDown) && this.player.body?.blocked.down === true && this.player.body.velocity.y === 0 && this.player.body.blocked.left === false && this.player.body.blocked.right === false) {
-            console.log("1")
             this.player.setVelocityY(200)
+        // Jumping Logic
         } else if((this.cursors.up.isDown || this.WASDcursors.up.isDown) && this.player.body?.blocked.down === true) {
-            console.log("2")
             this.player.setVelocityY(-240)
         }
 
+        // Holding A + D
         if(((this.cursors.right.isDown && this.cursors.left.isDown) || (this.WASDcursors.right.isDown && this.WASDcursors.left.isDown)) || ((this.cursors.left.isDown && this.cursors.right.isDown) || (this.WASDcursors.left.isDown && this.WASDcursors.right.isDown))) {
-            console.log("3")
             this.player.setVelocityX(-10)
         
         // Combinational movement
         } else if((this.cursors.right.isDown && this.cursors.up.isDown) || (this.WASDcursors.right.isDown && this.WASDcursors.up.isDown)) {
-            console.log("4")
             this.player.setVelocityX(160)
             if(this.player.body?.blocked.down) {
                 this.player.setVelocityY(-240)
             }
         } else if((this.cursors.left.isDown && this.cursors.up.isDown) || (this.WASDcursors.left.isDown && this.WASDcursors.up.isDown)) {
-            console.log("5")
             this.player.setVelocityX(-160)
             if(this.player.body?.blocked.down) {
                 this.player.setVelocityY(-240)
             }
         }
 
-        // Basic movement logic left and right
+        // Basic movement logic left, right, and jumping
         if(this.cursors.left.isDown || this.WASDcursors.left.isDown) {
             this.player.setVelocityX(-160)
         } else if(this.cursors.right.isDown || this.WASDcursors.right.isDown) {
