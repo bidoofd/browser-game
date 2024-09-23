@@ -4,6 +4,10 @@ Run npm i && npm run dev
 
 #### TODO:
 
+# IMPORTANT
+- Get socket connection working
+    - Response between socket client and socket server
+
 --- Definitely need to scale down level files/modularise them
 
 - Implement combinational player movement logic
@@ -18,6 +22,9 @@ Run npm i && npm run dev
     - Maybe more design?
 - Implement level selector screen/scene
     - Maybe more design?
+- Implement camera movement
+    - Follows player
+    - UI elements are in a static place
 
 #### Extra Info
 - Tiles are 16x16
