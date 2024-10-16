@@ -8,6 +8,12 @@ After server is setup, cd packages/client. Run
 
 npm run dev
 
+#### Socket:
+
+Socket functionality broken down from:
+
+https://github.com/arielger/lifecycle
+
 #### TODO:
 
 --- Definitely need to scale down level files/modularise them
