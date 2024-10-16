@@ -1,0 +1,16 @@
+{
+  "include": [
+    "./src"
+  ],
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./build",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    // "composite": true,
+    "declaration": true,
+    "declarationMap": true,
+    "esModuleInterop": true,
+    "resolveJsonModule": true
+  }
+}

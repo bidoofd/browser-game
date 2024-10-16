@@ -1,6 +1,12 @@
 #### To Start
 
-Run npm i && npm run dev
+In Root, Run
+
+npm run build:client && npm run start:server
+
+After server is setup, cd packages/client. Run
+
+npm run dev
 
 #### TODO:
 

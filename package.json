@@ -1,25 +1,21 @@
 {
-    "name": "browser-game",
-    "description": "broswer game",
-    "version": "1.0.0",
-    "main": "index.js",
-    "scripts": {
-        "dev": "node esbuild/dev.server.mjs -w",
-        "build": "node esbuild/build.prod.mjs"
-    },
-    "author": "Phaser Studio <support@phaser.io> (https://phaser.io/)",
-    "license": "MIT",
-    "dependencies": {
-        "phaser": "^3.80.1"
-    },
-    "devDependencies": {
-        "@jgoz/esbuild-plugin-livereload": "^2.0.5",
-        "@types/node": "^22.5.2",
-        "esbuild": "^0.21.2",
-        "esbuild-plugin-clean": "^1.0.1",
-        "esbuild-plugin-copy": "^2.1.1",
-        "esbuild-plugin-inline-image": "^0.0.9",
-        "esbuild-serve": "^1.0.1",
-        "typescript": "^5.5.4"
-    }
+  "name": "speedrun-browser-game",
+  "author": "Ariel Gerstein <ariel.gers@gmail.com>",
+  "license": "AGPL-3.0-or-later",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build:client": "lerna run build --scope=@speedrun-browser-game/client",
+    "start:server": "lerna run build --scope=@speedrun-browser-game/common && lerna run start --scope=@speedrun-browser-game/server"
+  },
+  "devDependencies": {
+    "lerna": "^6.6.1"
+  },
+  "version": "0.0.1",
+  "engines": {
+    "node": "18.x"
+  },
+  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }
