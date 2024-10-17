@@ -21,14 +21,9 @@ export type TPlayerInputMessage = {
   input: TPlayerInput;
 };
 
-export enum EPlayerAction {
-  ATTACK = "ATTACK",
-}
-
 export type TPlayer = {
   position: TVector2;
   lastProcessedInput: number;
-  action?: EPlayerAction;
   name: string;
 };
 

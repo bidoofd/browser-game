@@ -4,11 +4,9 @@ import matter from "matter-js";
 import {
   TPlayerInput,
   ECursorKey,
-  PLAYER_INITIAL_ATTACK,
   PLAYER_SIZE,
   TPlayer,
   getPlayerVelocity,
-  EPlayerAction,
 } from "@speedrun-browser-game/common/build/modules/player";
 import { getDirectionFromInputKeys } from "@speedrun-browser-game/common/build/utils/input";
 import { Direction } from "@speedrun-browser-game/common/build/types";
@@ -33,10 +31,7 @@ export class Player {
   lastProcessedInput: number;
   body: matter.Body;
   direction: Direction;
-  attack: number;
   name: string;
-  // Store player's action to send it to the client on the next update (for animations)
-  action?: EPlayerAction;
 
   world: matter.World;
   players: Record<string, Player>;
@@ -49,7 +44,6 @@ export class Player {
     this.id = uuidv4();
     this.lastProcessedInput = 0;
     this.direction = Direction.DOWN;
-    this.attack = PLAYER_INITIAL_ATTACK;
     this.name = name;
 
     this.players = players;
@@ -98,7 +92,6 @@ export class Player {
     return {
       position,
       lastProcessedInput: this.lastProcessedInput,
-      action: this.action,
       name: this.name,
     };
   }

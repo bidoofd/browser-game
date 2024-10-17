@@ -9,7 +9,6 @@ import {
 import {
   ECursorKey,
   getPlayerVelocity,
-  PLAYER_ATTACK_COOLDOWN,
   TPlayerInput,
 } from "@speedrun-browser-game/common/src/modules/player";
 import { MAP_SIZE } from "@speedrun-browser-game/common/src/modules/map";
@@ -186,17 +185,8 @@ export default class GameScene extends Phaser.Scene {
 
     const keys: ECursorKey[] = [];
 
-    const isAttacking =
-      this.player.lastAttackTimestamp + PLAYER_ATTACK_COOLDOWN >= Date.now();
-
-    // Disable all actions if player is already attacking (to avoid movement while attacking)
-    if (isAttacking) return;
-
-    if (Phaser.Input.Keyboard.JustDown(this.keySpace)) {
-      // Attack handling
-      this.player.lastAttackTimestamp = Date.now();
-      keys.push(ECursorKey.SPACE);
-    } else if (this.cursorKeys?.up.isDown) {
+    
+    if (this.cursorKeys?.up.isDown) {
       keys.push(ECursorKey.UP);
     } else if (this.cursorKeys?.down.isDown) {
       keys.push(ECursorKey.DOWN);

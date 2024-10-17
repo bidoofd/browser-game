@@ -4,8 +4,6 @@ import {
   TPlayers,
   getPlayerVelocity,
   ECursorKey,
-  EPlayerAction,
-  PLAYER_ATTACK_COOLDOWN,
 } from "@speedrun-browser-game/common/src/modules/player";
 import { Direction } from "@speedrun-browser-game/common/src/types";
 import { getDirectionFromInputKeys } from "@speedrun-browser-game/common/src/utils/input";
@@ -116,9 +114,6 @@ export class Player extends Phaser.GameObjects.Container {
   playerSprite: Phaser.GameObjects.Sprite;
   body!: MatterJS.BodyType;
   name: string;
-
-  // Substract attack cooldown to allow player to attack immediately
-  lastAttackTimestamp: number = Date.now() - PLAYER_ATTACK_COOLDOWN;
 
   // Store collision direction to prevent sending invalid player movement to the server
   collisionDirection?: Direction;
