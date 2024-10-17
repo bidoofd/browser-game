@@ -8,7 +8,8 @@
   ],
   "scripts": {
     "build:client": "lerna run build --scope=@speedrun-browser-game/client",
-    "start:server": "lerna run build --scope=@speedrun-browser-game/common && lerna run start --scope=@speedrun-browser-game/server"
+    "start:server": "lerna run build --scope=@speedrun-browser-game/common && lerna run start --scope=@speedrun-browser-game/server",
+    "delete": "rm -rf node_modules/ && rm -rf packages/client/.parcel-cache && rm -rf packages/client/dist && rm -rf packages/common/build && rm -rf packages/common/node_modules && rm -rf packages/server/build && rm -rf packages/server/node_modules && npm i"
   },
   "devDependencies": {
     "lerna": "^6.6.1"
