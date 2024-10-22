@@ -164,7 +164,7 @@ export class Player extends Phaser.GameObjects.Container {
     };
 
     const playerName = scene.add
-      .bitmapText(0, -20, GameAssets.TYPOGRAPHY, name)
+      .bitmapText(0, -20, GameAssets.TEXT, name)
       .setOrigin(0.5)
       .setScale(0.25)
       .setTintFill(0xffffff);

@@ -3,10 +3,12 @@ import Phaser from "phaser";
 import GameScene from "./scenes/game";
 import MenuScene from "./scenes/menu";
 import UIScene from "./scenes/ui/scene";
+import LevelSelector from "./scenes/levelselector";
 import { resolution } from "./resolution";
 
 const config: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
+  backgroundColor: "#028af8",
   physics: {
     default: "matter",
     matter: {
@@ -21,7 +23,7 @@ const config: Phaser.Types.Core.GameConfig = {
     parent: "game",
     autoCenter: Phaser.Scale.CENTER_VERTICALLY,
   },
-  scene: [MenuScene, GameScene, UIScene],
+  scene: [MenuScene, LevelSelector, GameScene, UIScene],
   pixelArt: true,
   dom: {
     // required for inputtext-plugin

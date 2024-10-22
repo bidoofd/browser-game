@@ -16,7 +16,7 @@ export class PlayerCountUI {
     this.playerCount = playerCount;
 
     this.text = this.scene.add
-      .bitmapText(8, 60, GameAssets.TYPOGRAPHY, `PLAYERS: ${this.playerCount}`)
+      .bitmapText(8, 60, GameAssets.TEXT, `PLAYERS: ${this.playerCount}`)
       .setTintFill(0xffffff);
   }
 

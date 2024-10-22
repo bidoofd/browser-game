@@ -185,7 +185,6 @@ export default class GameScene extends Phaser.Scene {
 
     const keys: ECursorKey[] = [];
 
-    
     if (this.cursorKeys?.up.isDown) {
       keys.push(ECursorKey.UP);
     } else if (this.cursorKeys?.down.isDown) {
@@ -229,12 +228,7 @@ export default class GameScene extends Phaser.Scene {
     const screenCenter = getScreenCenter(this);
 
     this.restartOverlay = this.add
-      .bitmapText(
-        screenCenter.x,
-        screenCenter.y,
-        GameAssets.TYPOGRAPHY,
-        "TRY AGAIN"
-      )
+      .bitmapText(screenCenter.x, screenCenter.y, GameAssets.TEXT, "TRY AGAIN")
       .setOrigin(0.5)
       .setScrollFactor(0, 0)
       .setDepth(99999);
