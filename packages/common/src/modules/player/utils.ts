@@ -11,20 +11,25 @@ export const getPlayerVelocity = ({
   delta: number;
   direction?: Direction;
 }) => {
-  const movement = (delta * PLAYER_VELOCITY) / 1000;
+  const newDelta = Math.floor(delta)
+  const movement = (newDelta * PLAYER_VELOCITY) / 1000;
+
+  if(direction === Direction.FALLING) {
+    return {
+      x: 0,
+      y: movement * 2
+    }
+  }
+
+  if(direction === Direction.STILL) {
+    return {
+      x: 0,
+      y: 0
+    }
+  }
 
   return {
-    x:
-      direction === Direction.LEFT
-        ? -movement
-        : direction === Direction.RIGHT
-        ? movement
-        : 0,
-    y:
-      direction === Direction.UP
-        ? -movement
-        : direction === Direction.DOWN
-        ? movement
-        : 0,
+    x: direction === Direction.LEFT ? -movement * 2.5 : direction === Direction.RIGHT ? movement * 2.5 : 0,
+    y: direction === Direction.UP ? -movement * 20 : direction === Direction.DOWN ? movement : 0,
   };
 };

@@ -6,6 +6,8 @@ export enum ECursorKey {
   LEFT = "LEFT",
   RIGHT = "RIGHT",
   SPACE = "SPACE",
+  FALLING = "FALLING",
+  STILL = "STILL",
 }
 
 // The list of messages could include other types of actions but for now

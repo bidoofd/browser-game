@@ -43,7 +43,7 @@ export class Player {
   ) {
     this.id = uuidv4();
     this.lastProcessedInput = 0;
-    this.direction = Direction.DOWN;
+    this.direction = Direction.STILL;
     this.name = name;
 
     this.players = players;

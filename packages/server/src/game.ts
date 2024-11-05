@@ -12,7 +12,7 @@ import { Player, getPlayersPublicData } from "./player";
 import { Map } from "./map";
 import { createLoop } from "./utils";
 
-const UPDATE_LOOP_RATE_PER_SECOND = 22;
+const UPDATE_LOOP_RATE_PER_SECOND = 16;
 
 type PlayerMap = Record<string, Player>;
 

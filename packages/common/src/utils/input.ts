@@ -4,6 +4,11 @@ import { Direction } from "../types/directions";
 export const getDirectionFromInputKeys = (
   keys: ECursorKey[]
 ): Direction | undefined => {
+
+  if(keys.includes(ECursorKey.FALLING)) {
+    return Direction.FALLING;
+  }
+
   if (keys.includes(ECursorKey.UP)) {
     return Direction.UP;
   } else if (keys.includes(ECursorKey.DOWN)) {

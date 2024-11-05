@@ -5,14 +5,18 @@ import { MAP_SIZE } from "@speedrun-browser-game/common/build/modules/map";
 import { randomInt } from "@speedrun-browser-game/common/build/utils/numbers";
 import { TVector2 } from "@speedrun-browser-game/common/build/modules/math";
 
-let playerCount = 0;
+let count = 0;
 
 const addWorldBounds = (world: Matter.World) => {
   matter.Composite.add(world, [
     // Horizontal bounds (left and right)
+
+    // Left
     matter.Bodies.rectangle(-5, MAP_SIZE.height / 2, 10, MAP_SIZE.height, {
       isStatic: true,
     }),
+
+    // Right
     matter.Bodies.rectangle(
       MAP_SIZE.width + 5,
       MAP_SIZE.height / 2,
@@ -24,9 +28,13 @@ const addWorldBounds = (world: Matter.World) => {
     ),
 
     // Vertical bounds (top and bottom)
+
+    // Top
     matter.Bodies.rectangle(MAP_SIZE.width / 2, -5, MAP_SIZE.width, 10, {
       isStatic: true,
     }),
+
+    // Bottom
     matter.Bodies.rectangle(
       MAP_SIZE.width / 2,
       MAP_SIZE.height + 5,
@@ -70,26 +78,22 @@ const layerToTileset = (
     if (customCollisionObjects) {
       customCollisionObjects.forEach((collisionObject) => {
         const body = matter.Bodies.rectangle(
-          tileX * mapJson.tilewidth +
-            collisionObject.x +
-            collisionObject.width / 2,
-          tileY * mapJson.tileheight +
-            collisionObject.y +
-            collisionObject.height / 2,
+          tileX * mapJson.tilewidth + collisionObject.x + collisionObject.width / 4,
+          tileY * mapJson.tileheight + collisionObject.y + collisionObject.height / 4,
           collisionObject.width,
           collisionObject.height,
-          { isStatic: true }
+          { isStatic: true, restitution: 0 }
         );
         matter.Composite.add(world, body);
       });
     } else {
       // Ony enable rectangle custom collision objects for now
       const body = matter.Bodies.rectangle(
-        tileX * mapJson.tilewidth + mapJson.tilewidth / 2,
-        tileY * mapJson.tileheight + mapJson.tileheight / 2,
+        tileX * mapJson.tilewidth + mapJson.tilewidth / 4,
+        tileY * mapJson.tileheight + mapJson.tileheight / 4,
         mapJson.tilewidth,
         mapJson.tileheight,
-        { isStatic: true }
+        { isStatic: true, restitution: 0 }
       );
       matter.Composite.add(world, body);
     }
@@ -113,7 +117,7 @@ export function getValidBodyPosition(
 ): TVector2 {
   const pos = {
     x: 0 + 32,
-    y: 0 + playerCount,
+    y: 0 + count,
   };
 
   const tempBody = matter.Bodies.rectangle(pos.x, pos.y, bodySize, bodySize);
@@ -124,6 +128,6 @@ export function getValidBodyPosition(
   );
 
   // If there are collisions, call the function again
-  playerCount = playerCount + 32;
+  count = count + 32;
   return collisions.length > 0 ? getValidBodyPosition(world, bodySize) : pos;
 }

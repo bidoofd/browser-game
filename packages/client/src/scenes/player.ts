@@ -76,15 +76,7 @@ export class PlayersManager {
         }
 
         player.setPosition(playerUpdate.position.x, playerUpdate.position.y);
-        player.setDepth(playerUpdate.position.y);
-      } else {
-        if (isCurrentPlayer) {
-          if (player) {
-            handlePlayerDeath();
-          }
-        } else {
-          player.die();
-        }
+        //player.setDepth(playerUpdate.position.y);
       }
     });
   }
@@ -134,10 +126,8 @@ export class Player extends Phaser.GameObjects.Container {
 
     this.playerSprite = scene.add.sprite(0, 0, PlayerAssets.PLAYER_SPRITES);
 
-    console.log("this", this);
     this.playerSprite.setDisplaySize(16, 16);
     this.setSize(16, 16);
-    console.log("playersprite", this.playerSprite);
     scene.matter.add.gameObject(this);
     // Prevent body from rotating
     this.body.inverseInertia = 0;
@@ -148,11 +138,14 @@ export class Player extends Phaser.GameObjects.Container {
     }: {
       collision: { normal: TVector2 };
     }) => {
-      if (collision.normal.x > 0) {
+      if(collision.normal.x === 0 && collision.normal.y === 1) {
+        this.collisionDirection = Direction.STILL;
+      }
+      if (collision.normal.x > 0 && collision.normal.y < 0) {
         this.collisionDirection = Direction.RIGHT;
-      } else if (collision.normal.x < 0) {
+      } else if (collision.normal.x < 0 && collision.normal.y === -1) {
         this.collisionDirection = Direction.LEFT;
-      } else if (collision.normal.y > 0) {
+      } else if (collision.normal.x === 0 && collision.normal.y === 1) {
         this.collisionDirection = Direction.DOWN;
       } else if (collision.normal.y < 0) {
         this.collisionDirection = Direction.UP;
@@ -182,7 +175,7 @@ export class Player extends Phaser.GameObjects.Container {
 
   update({ keys, delta }: { keys: ECursorKey[]; delta: number }): void {
     // Set correct depth rendering depending on y position
-    this.setDepth(this.body.position.y);
+    //this.setDepth(this.body.position.y);
 
     const inputMovementDirection = getDirectionFromInputKeys(keys);
 
@@ -193,41 +186,5 @@ export class Player extends Phaser.GameObjects.Container {
       });
       this.scene.matter.setVelocity(this.body, newVelocity.x, newVelocity.y);
     }
-  }
-
-  hit(): void {
-    this.scene.tweens.addCounter({
-      from: 255,
-      to: 0,
-      duration: 150,
-      yoyo: true,
-      onUpdate: (tween) => {
-        const value = Math.floor(tween.getValue());
-        this.playerSprite.setTint(
-          Phaser.Display.Color.GetColor(255, value, value)
-        );
-      },
-      onComplete: () => {
-        this.playerSprite.clearTint();
-      },
-    });
-  }
-
-  die(): void {
-    this.scene.tweens.addCounter({
-      from: 0,
-      to: 255,
-      duration: 400,
-      onUpdate: (tween) => {
-        const value = Math.floor(tween.getValue());
-        this.playerSprite.setTint(
-          Phaser.Display.Color.GetColor(value, value, value)
-        );
-      },
-      onComplete: () => {
-        this.playerSprite.clearTint();
-        this.destroy();
-      },
-    });
   }
 }
