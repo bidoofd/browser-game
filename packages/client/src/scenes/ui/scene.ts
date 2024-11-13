@@ -2,6 +2,7 @@ import { Scenes } from "../../types";
 import { GameSceneEvents } from "../game";
 import { PlayerCountUI } from "./player-count";
 import { ChatUI } from "./chat";
+import { TimerUI } from "./timer";
 
 const sceneConfig: Phaser.Types.Scenes.SettingsConfig = {
   key: Scenes.UI,
@@ -12,6 +13,7 @@ const sceneConfig: Phaser.Types.Scenes.SettingsConfig = {
 export default class UIScene extends Phaser.Scene {
   private playerCountUI?: PlayerCountUI;
   private chatUI?: ChatUI;
+  private timer!: TimerUI;
 
   constructor() {
     super(sceneConfig);
@@ -21,6 +23,10 @@ export default class UIScene extends Phaser.Scene {
     const gameScene = this.scene.get(Scenes.GAME);
 
     this.chatUI = new ChatUI({
+      scene: this,
+    });
+
+    this.timer = new TimerUI({
       scene: this,
     });
 
@@ -48,5 +54,9 @@ export default class UIScene extends Phaser.Scene {
         this.playerCountUI?.updatePlayerCount(playerCount);
       }
     );
+
+    gameScene.events.on(GameSceneEvents.UPDATE_TIMER, () => {
+      this.timer.updateTimer();
+    });
   }
 }

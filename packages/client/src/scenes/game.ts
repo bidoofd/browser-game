@@ -35,6 +35,9 @@ export enum GameSceneEvents {
   // Chat
   PLAYER_JOINED = "PLAYER_JOINED",
   PLAYER_LEFT = "PLAYER_LEFT",
+
+  // Timer
+  UPDATE_TIMER = "UPDATE_TIMER",
 }
 
 export default class GameScene extends Phaser.Scene {
@@ -235,6 +238,8 @@ export default class GameScene extends Phaser.Scene {
         }
       }
     }
+
+    this.events.emit(GameSceneEvents.UPDATE_TIMER);
   }
 
   public createRestartOverlay(): void {
