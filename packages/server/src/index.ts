@@ -16,7 +16,7 @@ if (process.env.NODE_ENV !== "production") {
 
 const app = express();
 const server = http.createServer(app);
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3200;
 
 app.get("/", async (_req, res) => {
   const healthcheck = {
@@ -36,7 +36,7 @@ const io = new SocketServer<TClientToServerEvents, TServerToClientEvents>(
   server,
   {
     cors: {
-      origin: process.env.CLIENT_URL,
+      origin: '*',
       methods: ["GET", "POST"],
     },
   }

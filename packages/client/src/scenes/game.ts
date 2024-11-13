@@ -90,7 +90,7 @@ export default class GameScene extends Phaser.Scene {
     this.cameras.main.setBounds(0, 0, MAP_SIZE.width, MAP_SIZE.height);
     // @TODO: Review this solution => are we doing more
     // graphic processing when increasing resolution and adding zoom?
-    this.cameras.main.setZoom(1);
+    this.cameras.main.setZoom(resolution.zoom);
     this.matter.world.setBounds(0, 0, MAP_SIZE.width, MAP_SIZE.height);
 
     // UI
