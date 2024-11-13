@@ -24,6 +24,7 @@ const addWorldBounds = (world: Matter.World) => {
       MAP_SIZE.height,
       {
         isStatic: true,
+        slop: 0.0001
       }
     ),
 
@@ -32,6 +33,7 @@ const addWorldBounds = (world: Matter.World) => {
     // Top
     matter.Bodies.rectangle(MAP_SIZE.width / 2, -5, MAP_SIZE.width, 10, {
       isStatic: true,
+      slop: 0.0001
     }),
 
     // Bottom
@@ -40,7 +42,9 @@ const addWorldBounds = (world: Matter.World) => {
       MAP_SIZE.height + 5,
       MAP_SIZE.width,
       10,
-      { isStatic: true }
+      { isStatic: true,
+        slop: 0.0001
+       }
     ),
   ]);
 };
@@ -82,7 +86,7 @@ const layerToTileset = (
           tileY * mapJson.tileheight + collisionObject.y + collisionObject.height / 4,
           collisionObject.width,
           collisionObject.height,
-          { isStatic: true, restitution: 0 }
+          { isStatic: true, restitution: 0, slop: 0.0001 }
         );
         matter.Composite.add(world, body);
       });
@@ -93,7 +97,7 @@ const layerToTileset = (
         tileY * mapJson.tileheight + mapJson.tileheight / 4,
         mapJson.tilewidth,
         mapJson.tileheight,
-        { isStatic: true, restitution: 0 }
+        { isStatic: true, restitution: 0, slop: 0.0001}
       );
       matter.Composite.add(world, body);
     }

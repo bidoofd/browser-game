@@ -60,6 +60,9 @@ export class Player {
         collisionFilter: {
           group: -1,
         },
+        slop: 0.0001,
+        friction: 1,
+        frictionStatic: 0
       }
     );
     matter.Composite.add(world, this.body);
