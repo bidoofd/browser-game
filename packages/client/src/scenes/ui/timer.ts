@@ -12,14 +12,14 @@ export class TimerUI {
 
     this.timerText = this.scene.add.text(
       resolution.width / resolution.zoom + 1000,
-      resolution.height / (resolution.zoom) + 650,
+      resolution.height / resolution.zoom + 650,
       "",
       {
-        fontSize: '48px'
+        fontSize: "48px",
       }
     );
 
-    console.log("timerText", this.timerText)
+    console.log("timerText", this.timerText);
     this.timer = this.scene.time.addEvent({
       delay: 1000,
       callback: () => {

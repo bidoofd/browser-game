@@ -7,5 +7,6 @@ export enum Scenes {
   MENU = "Menu",
   GAME = "Game",
   UI = "UI",
-  LEVELSELECTOR = "LEVELSELCTOR",
+  LEVELSELECTOR = "LEVELSELECTOR",
+  LEADERBOARD = "LEADERBOARD",
 }

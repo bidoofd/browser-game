@@ -13,11 +13,19 @@ import { GameAssets, Scenes } from "../types";
 const sceneConfig: Phaser.Types.Scenes.SettingsConfig = {
   active: false,
   visible: false,
-  key: Scenes.LEVELSELECTOR,
+  key: Scenes.LEADERBOARD,
 };
 
 export default class GameScene extends Phaser.Scene {
   nameInput?: InputText;
+  rankData = [
+    {rank: 1, name: 'Alice', score: 95},
+    {rank: 2, name: 'Bob', score: 85},
+    {rank: 3, name: 'Charlie', score: 75},
+    {rank: 4, name: 'Diana', score: 65},
+    {rank: 5, name: 'Eve', score: 55}
+  ];
+  rankCount: number = - 250;
 
   constructor() {
     super(sceneConfig);
@@ -35,42 +43,32 @@ export default class GameScene extends Phaser.Scene {
     this.add
       .bitmapText(
         screenCenter.x,
-        screenCenter.y - 200,
+        screenCenter.y - 400,
         GameAssets.TITLE,
-        "LEVEL SELECTOR"
+        "LEADERBOARD"
       )
       .setFontSize(128)
       .setOrigin(0.5)
       .setTintFill(0xe5a6ff);
+    
+      this.add.bitmapText(screenCenter.x, screenCenter.y - 300, GameAssets.TEXT, `RANK     NAME     SCORE`).setFontSize(72).setOrigin(0.5).setTintFill(0x000000)
+       this.rankData.forEach((scoreline) => {
+         this.add.bitmapText(screenCenter.x, screenCenter.y + (this.rankCount), GameAssets.TEXT, `${scoreline.rank}      ${scoreline.name}      ${scoreline.score}`).setFontSize(72).setOrigin(0.5).setTintFill(0x000000)
+         this.rankCount+=50;
+       })
+      
 
-    const leveloneButton = this.add
-      .bitmapText(
-        screenCenter.x,
-        screenCenter.y - 100,
-        GameAssets.TEXT,
-        "LEVEL ONE"
-      )
+    const levelSelectorButton = this.add
+      .bitmapText(screenCenter.x, screenCenter.y + 300, GameAssets.TEXT, "BACK")
       .setOrigin(0.5)
       .setFontSize(48)
       .setTintFill(0x00000);
 
-    leveloneButton.setInteractive({ useHandCursor: true });
-    leveloneButton.on("pointerdown", () => {
-      this.scene.start(Scenes.GAME, { playerName: name });
-      this.scene.launch(Scenes.UI);
-    });
+      levelSelectorButton.setInteractive({ useHandCursor: true });
 
-    const startButton = this.add
-      .bitmapText(screenCenter.x, screenCenter.y + 60, GameAssets.TEXT, "START")
-      .setOrigin(0.5)
-      .setFontSize(48)
-      .setTintFill(0x00000);
-
-    startButton.setInteractive({ useHandCursor: true });
-
-    startButton.on("pointerdown", () => {
+      levelSelectorButton.on("pointerdown", () => {
       //this.scene.start(Scenes.GAME, { playerName: name });
-      this.scene.start(Scenes.LEADERBOARD);
+      this.scene.start(Scenes.LEVELSELECTOR);
     });
   }
 }

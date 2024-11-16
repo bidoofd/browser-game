@@ -4,6 +4,7 @@ import GameScene from "./scenes/game";
 import MenuScene from "./scenes/menu";
 import UIScene from "./scenes/ui/scene";
 import LevelSelector from "./scenes/levelselector";
+import Leaderboard from "./scenes/leaderboard";
 import { resolution } from "./resolution";
 
 const config: Phaser.Types.Core.GameConfig = {
@@ -23,7 +24,7 @@ const config: Phaser.Types.Core.GameConfig = {
     parent: "game",
     autoCenter: Phaser.Scale.CENTER_VERTICALLY,
   },
-  scene: [MenuScene, LevelSelector, GameScene, UIScene],
+  scene: [MenuScene, LevelSelector, GameScene, UIScene, Leaderboard],
   pixelArt: true,
   dom: {
     // required for inputtext-plugin

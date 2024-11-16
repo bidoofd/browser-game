@@ -3,3 +3,4 @@ yarn-error.log
 tsconfig.tsbuildinfo
 .parcel-cache
 yarn.lock
+.DS_STORE
