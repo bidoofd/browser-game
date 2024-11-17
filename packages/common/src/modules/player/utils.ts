@@ -30,6 +30,6 @@ export const getPlayerVelocity = ({
 
   return {
     x: direction === Direction.LEFT ? -movement * 2.5 : direction === Direction.RIGHT ? movement * 2.5 : 0,
-    y: direction === Direction.UP ? -movement * 20 : direction === Direction.DOWN ? movement : 0,
+    y: direction === Direction.UP ? -movement * 15 : direction === Direction.DOWN ? movement : 0,
   };
 };

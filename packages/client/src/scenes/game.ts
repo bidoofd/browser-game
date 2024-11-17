@@ -187,6 +187,8 @@ export default class GameScene extends Phaser.Scene {
 
     const keys: ECursorKey[] = [];
 
+    console.log("collisionDirection", this.player.collisionDirection)
+
     if(!this.cursorKeys.up.isDown && !this.cursorKeys.left.isDown && !this.cursorKeys.right.isDown && (this.player.collisionDirection === Direction.STILL || this.player.collisionDirection === Direction.DOWN)) {
       keys.push(ECursorKey.STILL);
     }
@@ -197,7 +199,9 @@ export default class GameScene extends Phaser.Scene {
     ) {
       keys.push(ECursorKey.FALLING);
     } else if (this.player.collisionDirection !== undefined) {
+      console.log("this.player.coll", this.player.collisionDirection)
         if(this.cursorKeys?.up.isDown && this.player.collisionDirection === Direction.DOWN) {
+          console.log("pushing up")
           keys.push(ECursorKey.UP);
       }
     }
@@ -208,6 +212,23 @@ export default class GameScene extends Phaser.Scene {
       keys.push(ECursorKey.LEFT);
     } else if (this.cursorKeys?.right.isDown && this.player.collisionDirection === Direction.DOWN) {
       keys.push(ECursorKey.RIGHT);
+    }
+
+    if(this.cursorKeys.right.isDown && this.cursorKeys.up.isDown) {
+      keys.push(ECursorKey.RIGHT)
+      if(this.player.collisionDirection === Direction.DOWN) {
+        keys.push(ECursorKey.UP)
+      }
+    } else if(this.cursorKeys.left.isDown && this.cursorKeys.up.isDown) {
+      keys.push(ECursorKey.LEFT)
+      if(this.player.collisionDirection === Direction.DOWN) {
+        keys.push(ECursorKey.UP)
+      }
+    }
+
+    console.log("keys", keys)
+    if(keys.length === 0) {
+      keys.push(ECursorKey.FALLING)
     }
 
     this.player.update({ keys, delta });
