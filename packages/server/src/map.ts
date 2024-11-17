@@ -1,11 +1,9 @@
 import matter from "matter-js";
-import mapJson from "@speedrun-browser-game/common/src/modules/map/level1.json";
+import mapJson from "@speedrun-browser-game/common/src/modules/map/level2.json";
 import { MAP_SIZE } from "@speedrun-browser-game/common/build/modules/map";
 
 import { randomInt } from "@speedrun-browser-game/common/build/utils/numbers";
 import { TVector2 } from "@speedrun-browser-game/common/build/modules/math";
-
-let count = 0;
 
 const addWorldBounds = (world: Matter.World) => {
   matter.Composite.add(world, [
@@ -119,19 +117,34 @@ export function getValidBodyPosition(
   world: matter.World,
   bodySize: number
 ): TVector2 {
+  const tilesets = mapJson.layers.find((t) => t.name === "Interactables")!;
+  const levelarray = tilesets.data
+  const numColumns = tilesets.width; // Number of elements per row
+  const numRows = tilesets.height // Calculate the number of rows
+
+  let newPosition: TVector2 = {x: 0, y: 0};
+
+  // Loop through the 2D "array"
+  for (let row = 0; row < numRows; row++) {
+    // Create a sub-array for the current row
+    const rowStart = row * numColumns;
+    const rowEnd = Math.min((row + 1) * numColumns, levelarray.length);
+    const rowArray = levelarray.slice(rowStart, rowEnd);
+    
+    // Process each row
+    
+    // If you want to stop on encountering a number 20, add a break condition
+    if (rowArray.includes(20)) {
+      newPosition.y = row
+      newPosition.x = rowArray.indexOf(20)
+      break; // Exit the loop when 20 is found
+    }
+  }
+
+
   const pos = {
-    x: 0 + 32,
-    y: 0 + count,
+    x: newPosition.x * 16,
+    y: newPosition.y * 16,
   };
-
-  const tempBody = matter.Bodies.rectangle(pos.x, pos.y, bodySize, bodySize);
-
-  const collisions = matter.Query.collides(
-    tempBody,
-    matter.Composite.allBodies(world)
-  );
-
-  // If there are collisions, call the function again
-  count = count + 32;
-  return collisions.length > 0 ? getValidBodyPosition(world, bodySize) : pos;
+  return pos;
 }

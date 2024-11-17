@@ -4,8 +4,10 @@ import tilesetInteriorFloor from "url:@speedrun-browser-game/common/src/modules/
 import tilesetNature from "url:@speedrun-browser-game/common/src/modules/map/TilesetNature.png";
 import mapJson from "@speedrun-browser-game/common/src/modules/map/map.json";*/
 
-import level1Json from "@speedrun-browser-game/common/src/modules/map/level1.json";
+import level1Json from "@speedrun-browser-game/common/src/modules/map/level2.json";
 import tiles from "url:@speedrun-browser-game/common/src/modules/map/tiles.png";
+
+import Phaser from "phaser";
 
 export const preloadMapAssets = (scene: Phaser.Scene): void => {
 
@@ -47,3 +49,15 @@ export const createMap = (scene: Phaser.Scene): void => {
   //scene.matter.world.convertTilemapLayer(backgroundLayer);
   //scene.matter.world.convertTilemapLayer(natureLayer);
 };
+
+export const findStartTile = (scene: Phaser.Scene) => {
+  const level = scene.make.tilemap({key: "levelone"});
+  const startTile = level.getLayer("Interactables")?.data
+  .flatMap(tileRow => tileRow)  // Flatten the 2D array to 1D
+  .find(startTile => startTile.index === 20);
+  return startTile;
+}
+
+export const createTileMap = (scene: Phaser.Scene) => {
+  return scene.make.tilemap({key: "levelone"})
+}
