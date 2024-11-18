@@ -19,7 +19,6 @@ export class TimerUI {
       }
     );
 
-    console.log("timerText", this.timerText);
     this.timer = this.scene.time.addEvent({
       delay: 1000,
       callback: () => {

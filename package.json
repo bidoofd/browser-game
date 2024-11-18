@@ -11,8 +11,8 @@
       "build:client": "npm run delete && lerna run build --scope=@speedrun-browser-game/client",
       "start:server": "lerna run build --scope=@speedrun-browser-game/common && lerna run start --scope=@speedrun-browser-game/server",
       "delete": "rm -rf node_modules/ && rm -rf packages/client/.parcel-cache && rm -rf packages/client/dist && rm -rf packages/common/build && rm -rf packages/common/node_modules && rm -rf packages/server/build && rm -rf packages/server/node_modules && npm i",
-      "start": "ts-node packages/server/src/index2.ts",
-      "dev": "nodemon -w *.ts -w packages/server/.env packages/server/src/index2.ts",
+      "start": "ts-node packages/server/src/index.ts",
+      "dev": "nodemon -w *.ts -w packages/server/.env packages/server/src/index.ts",
       "typeorm": "typeorm-ts-node-commonjs",
       "test": "jest"
    },

@@ -60,7 +60,7 @@ export default class UIScene extends Phaser.Scene {
     });
 
     gameScene.events.on(GameSceneEvents.PLAYER_WIN, () => {
-      console.log("win");
+      this.scene.start(Scenes.LEADERBOARD);
     });
   }
 }

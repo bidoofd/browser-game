@@ -58,6 +58,14 @@ export const findStartTile = (scene: Phaser.Scene) => {
   return startTile;
 }
 
+export const findEndTile = (scene: Phaser.Scene) => {
+  const level = scene.make.tilemap({key: "levelone"});
+  const endTile = level.getLayer("Interactables")?.data
+  .flatMap(tileRow => tileRow)  // Flatten the 2D array to 1D
+  .find(endTile => endTile.index === 21);
+  return endTile;
+}
+
 export const createTileMap = (scene: Phaser.Scene) => {
   return scene.make.tilemap({key: "levelone"})
 }

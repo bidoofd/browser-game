@@ -17,10 +17,11 @@ import { getDirectionFromInputKeys } from "@speedrun-browser-game/common/src/uti
 
 import { resolution } from "../resolution";
 import { Player, PlayersManager } from "./player";
-import { preloadMapAssets, createMap } from "./map";
+import { preloadMapAssets, createMap, findStartTile, findEndTile } from "./map";
 import { gameConfig } from "./ui/config";
 import { getScreenCenter } from "../utils/text";
 import { GameAssets, Scenes } from "../types";
+import { Body } from "matter";
 
 const sceneConfig: Phaser.Types.Scenes.SettingsConfig = {
   key: Scenes.GAME,
@@ -51,6 +52,11 @@ export default class GameScene extends Phaser.Scene {
   private playersManager?: PlayersManager;
   private playerId?: string;
   private player?: Player;
+  private playerObject;
+  private endTileBody;
+  private didPlayerWin;
+  private savedName;
+  private savedID;
 
   /**
    * INITIALIZED - Initial state - wait for initial game state from server
@@ -98,6 +104,11 @@ export default class GameScene extends Phaser.Scene {
     this.cameras.main.setZoom(resolution.zoom);
     this.matter.world.setBounds(0, 0, MAP_SIZE.width, MAP_SIZE.height);
 
+    let endTile;
+    endTile = findEndTile(this);
+
+    this.endTileBody = this.matter.add.tileBody(endTile).setStatic(false);
+
     // UI
     this.createRestartOverlay();
 
@@ -107,6 +118,7 @@ export default class GameScene extends Phaser.Scene {
       if (update.type === "INITIAL_GAME_STATE") {
         this.setRestartOverlayVisibility(false);
 
+        this.didPlayerWin = false;
         this.gameState = "IN_PROCESS";
         this.playersManager?.initializePlayers(update.playerId, update.players);
 
@@ -115,17 +127,35 @@ export default class GameScene extends Phaser.Scene {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         this.player = this.playersManager!.currentPlayer!;
 
+        this.playerObject = this.player;
+
         this.cameras.main.startFollow(this.player, true, 0.05, 0.05);
 
         this.events.emit(
           GameSceneEvents.INITIALIZE_PLAYER_COUNT,
           Object.keys(update.players).length
         );
-      } else if (update.type === "GAME_STATE") {
+      } else if (update.type === "GAME_STATE" && !this.didPlayerWin) {
+        this.matter.world.on("collisionstart", (event, bodyA, bodyB) => {
+          var pairs = event.pairs;
+          pairs.forEach((pair) => {
+            if (
+              (pair.bodyA === this.playerObject.body &&
+                pair.bodyB === this.endTileBody.body) ||
+              (pair.bodyA === this.endTileBody.body &&
+                pair.bodyB === this.playerObject.body)
+            ) {
+              this.didPlayerWin = true;
+              this.savedName = update.players[this.playerId!].name;
+              this.savedID = this.playerId!;
+            }
+          });
+        });
+
         // @TODO: Review => we should be sending deltas of game state
         this.playersManager?.updatePlayers({
           playersUpdate: update.players,
-          isPlayerAlreadyDead: this.gameState === "PLAYER_DEAD",
+          isPlayerAlreadyDead: this.didPlayerWin,
           handlePlayerDeath: this.handlePlayerDeath.bind(this),
         });
 
@@ -133,6 +163,12 @@ export default class GameScene extends Phaser.Scene {
           gameConfig.serverReconciliation &&
           this.gameState === "IN_PROCESS"
         ) {
+          if (!this.didPlayerWin) {
+            this.gameState = "IN_PROCESS";
+          } else {
+            this.gameState = "PLAYER_DEAD";
+          }
+
           const lastProcessedInput =
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             update.players[this.playerId!].lastProcessedInput;
@@ -166,6 +202,11 @@ export default class GameScene extends Phaser.Scene {
         } else {
           this.pendingInputs = [];
         }
+      } else if (this.didPlayerWin) {
+        this.socket?.disconnect();
+        this.scene.stop();
+        this.playerObject.destroy();
+        this.events.emit(GameSceneEvents.PLAYER_WIN, this.savedName);
       } else if (update.type === "PLAYER_JOINED") {
         this.events.emit(GameSceneEvents.PLAYER_JOINED, update.player.name);
         this.playersManager?.addPlayer(update.playerId, update.player);
@@ -180,9 +221,6 @@ export default class GameScene extends Phaser.Scene {
           GameSceneEvents.UPDATE_PLAYER_COUNT,
           this.playersManager!.players.getLength()
         );
-      } else if (update.type === "PLAYER_WIN") {
-        this.events.emit(GameSceneEvents.PLAYER_WIN, update.player.name);
-        this.playersManager?.removePlayer(update.playerId);
       }
     });
   }
@@ -192,48 +230,63 @@ export default class GameScene extends Phaser.Scene {
 
     const keys: ECursorKey[] = [];
 
-    console.log("collisionDirection", this.player.collisionDirection)
-
-    if(!this.cursorKeys.up.isDown && !this.cursorKeys.left.isDown && !this.cursorKeys.right.isDown && (this.player.collisionDirection === Direction.STILL || this.player.collisionDirection === Direction.DOWN)) {
+    if (
+      !this.cursorKeys.up.isDown &&
+      !this.cursorKeys.left.isDown &&
+      !this.cursorKeys.right.isDown &&
+      (this.player.collisionDirection === Direction.STILL ||
+        this.player.collisionDirection === Direction.DOWN)
+    ) {
       keys.push(ECursorKey.STILL);
     }
 
     if (
       !this.cursorKeys?.up.isDown &&
-      (this.player.collisionDirection === Direction.FALLING || this.player.collisionDirection === undefined && this.player.collisionDirection !== Direction.DOWN)
+      (this.player.collisionDirection === Direction.FALLING ||
+        (this.player.collisionDirection === undefined &&
+          this.player.collisionDirection !== Direction.DOWN))
     ) {
       keys.push(ECursorKey.FALLING);
     } else if (this.player.collisionDirection !== undefined) {
-      console.log("this.player.coll", this.player.collisionDirection)
-        if(this.cursorKeys?.up.isDown && this.player.collisionDirection === Direction.DOWN) {
-          console.log("pushing up")
-          keys.push(ECursorKey.UP);
+      if (
+        this.cursorKeys?.up.isDown &&
+        this.player.collisionDirection === Direction.DOWN
+      ) {
+        keys.push(ECursorKey.UP);
       }
     }
 
-    if (this.cursorKeys?.down.isDown && this.player.collisionDirection === Direction.DOWN) {
+    if (
+      this.cursorKeys?.down.isDown &&
+      this.player.collisionDirection === Direction.DOWN
+    ) {
       keys.push(ECursorKey.STILL);
-    } else if (this.cursorKeys?.left.isDown && this.player.collisionDirection === Direction.DOWN) {
+    } else if (
+      this.cursorKeys?.left.isDown &&
+      this.player.collisionDirection === Direction.DOWN
+    ) {
       keys.push(ECursorKey.LEFT);
-    } else if (this.cursorKeys?.right.isDown && this.player.collisionDirection === Direction.DOWN) {
+    } else if (
+      this.cursorKeys?.right.isDown &&
+      this.player.collisionDirection === Direction.DOWN
+    ) {
       keys.push(ECursorKey.RIGHT);
     }
 
-    if(this.cursorKeys.right.isDown && this.cursorKeys.up.isDown) {
-      keys.push(ECursorKey.RIGHT)
-      if(this.player.collisionDirection === Direction.DOWN) {
-        keys.push(ECursorKey.UP)
+    if (this.cursorKeys.right.isDown && this.cursorKeys.up.isDown) {
+      keys.push(ECursorKey.RIGHT);
+      if (this.player.collisionDirection === Direction.DOWN) {
+        keys.push(ECursorKey.UP);
       }
-    } else if(this.cursorKeys.left.isDown && this.cursorKeys.up.isDown) {
-      keys.push(ECursorKey.LEFT)
-      if(this.player.collisionDirection === Direction.DOWN) {
-        keys.push(ECursorKey.UP)
+    } else if (this.cursorKeys.left.isDown && this.cursorKeys.up.isDown) {
+      keys.push(ECursorKey.LEFT);
+      if (this.player.collisionDirection === Direction.DOWN) {
+        keys.push(ECursorKey.UP);
       }
     }
 
-    console.log("keys", keys)
-    if(keys.length === 0) {
-      keys.push(ECursorKey.FALLING)
+    if (keys.length === 0) {
+      keys.push(ECursorKey.FALLING);
     }
 
     this.player.update({ keys, delta });
@@ -243,7 +296,6 @@ export default class GameScene extends Phaser.Scene {
     const filteredKeys = keys.filter(
       (key) => key !== this.player?.collisionDirection
     );
-
 
     if (filteredKeys.length > 0) {
       const input: TPlayerInput = {

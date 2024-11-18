@@ -87,6 +87,7 @@ export default class GameScene extends Phaser.Scene {
 
     levelSelectorButton.on("pointerdown", () => {
       //this.scene.start(Scenes.GAME, { playerName: name });
+      this.rankCount = -250;
       this.scene.start(Scenes.LEVELSELECTOR);
     });
   }

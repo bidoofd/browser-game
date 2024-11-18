@@ -32,13 +32,13 @@ export type TServerToClientEvents = {
           player: TPlayer;
         }
       | {
-          type: "GAME_STATE";
-          players: TPlayers;
-        }
-      | {
           type: "PLAYER_WIN";
           playerId: string;
           player: TPlayers;
+        }
+      | {
+          type: "GAME_STATE";
+          players: TPlayers;
         }
   ) => void;
 };

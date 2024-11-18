@@ -74,10 +74,17 @@ export class PlayersManager {
             playerUpdate.position
           );
         }
-
         player.setPosition(playerUpdate.position.x, playerUpdate.position.y);
         //player.setDepth(playerUpdate.position.y);
-      }
+       } //else {
+      //   if (isCurrentPlayer) {  
+      //     if (player) {
+      //       handlePlayerDeath();
+      //     }
+      //   } else {
+      //     player.destroy();
+      //   }
+      // }
     });
   }
 
@@ -184,7 +191,11 @@ export class Player extends Phaser.GameObjects.Container {
         delta,
         direction: inputMovementDirection,
       });
-      this.scene.matter.setVelocity(this.body, newVelocity.x, newVelocity.y);
+      if(this.scene !== undefined) {
+        this.scene.matter.setVelocity(this.body, newVelocity.x, newVelocity.y);
+      }
     }
   }
 }
+
+
