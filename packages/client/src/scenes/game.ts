@@ -38,6 +38,8 @@ export enum GameSceneEvents {
 
   // Timer
   UPDATE_TIMER = "UPDATE_TIMER",
+
+  PLAYER_WIN = "PLAYER_WIN",
 }
 
 export default class GameScene extends Phaser.Scene {
@@ -73,7 +75,7 @@ export default class GameScene extends Phaser.Scene {
     preloadMapAssets(this);
   }
 
-  public create({ playerName }: { playerName: string }): void {
+  public async create({ playerName }: { playerName: string }): Promise<void> {
     this.socket = io(process.env.SOCKET_SERVER_URL, {
       query: {
         playerName,
@@ -178,6 +180,9 @@ export default class GameScene extends Phaser.Scene {
           GameSceneEvents.UPDATE_PLAYER_COUNT,
           this.playersManager!.players.getLength()
         );
+      } else if (update.type === "PLAYER_WIN") {
+        this.events.emit(GameSceneEvents.PLAYER_WIN, update.player.name);
+        this.playersManager?.removePlayer(update.playerId);
       }
     });
   }

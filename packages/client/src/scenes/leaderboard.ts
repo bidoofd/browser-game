@@ -19,13 +19,15 @@ const sceneConfig: Phaser.Types.Scenes.SettingsConfig = {
 export default class GameScene extends Phaser.Scene {
   nameInput?: InputText;
   rankData = [
-    {rank: 1, name: 'Alice', score: 95},
-    {rank: 2, name: 'Bob', score: 85},
-    {rank: 3, name: 'Charlie', score: 75},
-    {rank: 4, name: 'Diana', score: 65},
-    {rank: 5, name: 'Eve', score: 55}
+    { rank: 1, name: "Alice", score: 95 },
+    { rank: 2, name: "Bob", score: 85 },
+    { rank: 3, name: "Charlie", score: 75 },
+    { rank: 4, name: "Diana", score: 65 },
+    { rank: 5, name: "Eve", score: 55 },
   ];
-  rankCount: number = - 250;
+  rankCount = -250;
+
+  //fs.writeFileSync(filePath, jsonData, 'utf-8');
 
   constructor() {
     super(sceneConfig);
@@ -50,13 +52,30 @@ export default class GameScene extends Phaser.Scene {
       .setFontSize(128)
       .setOrigin(0.5)
       .setTintFill(0xe5a6ff);
-    
-      this.add.bitmapText(screenCenter.x, screenCenter.y - 300, GameAssets.TEXT, `RANK     NAME     SCORE`).setFontSize(72).setOrigin(0.5).setTintFill(0x000000)
-       this.rankData.forEach((scoreline) => {
-         this.add.bitmapText(screenCenter.x, screenCenter.y + (this.rankCount), GameAssets.TEXT, `${scoreline.rank}      ${scoreline.name}      ${scoreline.score}`).setFontSize(72).setOrigin(0.5).setTintFill(0x000000)
-         this.rankCount+=50;
-       })
-      
+
+    this.add
+      .bitmapText(
+        screenCenter.x,
+        screenCenter.y - 300,
+        GameAssets.TEXT,
+        `RANK     NAME     SCORE`
+      )
+      .setFontSize(72)
+      .setOrigin(0.5)
+      .setTintFill(0x000000);
+    this.rankData.forEach((scoreline) => {
+      this.add
+        .bitmapText(
+          screenCenter.x,
+          screenCenter.y + this.rankCount,
+          GameAssets.TEXT,
+          `${scoreline.rank}      ${scoreline.name}      ${scoreline.score}`
+        )
+        .setFontSize(72)
+        .setOrigin(0.5)
+        .setTintFill(0x000000);
+      this.rankCount += 50;
+    });
 
     const levelSelectorButton = this.add
       .bitmapText(screenCenter.x, screenCenter.y + 300, GameAssets.TEXT, "BACK")
@@ -64,9 +83,9 @@ export default class GameScene extends Phaser.Scene {
       .setFontSize(48)
       .setTintFill(0x00000);
 
-      levelSelectorButton.setInteractive({ useHandCursor: true });
+    levelSelectorButton.setInteractive({ useHandCursor: true });
 
-      levelSelectorButton.on("pointerdown", () => {
+    levelSelectorButton.on("pointerdown", () => {
       //this.scene.start(Scenes.GAME, { playerName: name });
       this.scene.start(Scenes.LEVELSELECTOR);
     });

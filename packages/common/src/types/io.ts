@@ -35,5 +35,10 @@ export type TServerToClientEvents = {
           type: "GAME_STATE";
           players: TPlayers;
         }
+      | {
+          type: "PLAYER_WIN";
+          playerId: string;
+          player: TPlayers;
+        }
   ) => void;
 };

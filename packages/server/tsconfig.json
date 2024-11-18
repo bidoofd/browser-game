@@ -1,5 +1,7 @@
 {
   "compilerOptions": {
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
     "rootDir": "./src",
     "outDir": "./build",
     "target": "es5",
@@ -12,6 +14,6 @@
     "esModuleInterop": true,
     "resolveJsonModule": true,
     // Add "skipLibCheck" to fix error with dat.gui types (dom types not present on server)
-    "skipLibCheck": true
+    "skipLibCheck": true,
   }
 }
