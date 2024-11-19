@@ -5,12 +5,14 @@ export enum ESocketEventNames {
   GameUpdate = "GAME_UPDATE",
   // Client to server
   PlayerInput = "PLAYER_INPUT",
-  RestartGame = "RESTART_GAME",
+  SendData = "SEND_DATA",
+  //SendData = "SEND_DATA",
 }
 
 export type TClientToServerEvents = {
   [ESocketEventNames.PlayerInput]: (input: TPlayerInput) => void;
-  [ESocketEventNames.RestartGame]: () => void;
+  [ESocketEventNames.SendData]: (name: string, time: string) => void;
+  //[ESocketEventNames.SendData]: () => void;
 };
 
 export type TServerToClientEvents = {

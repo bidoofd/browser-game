@@ -121,8 +121,6 @@ AppDataSource.initialize()
       }
     );
 
-    startGame(io);
-
     server.listen(PORT, () => {
       console.log(`Listening on *:${PORT}`);
     });
@@ -132,21 +130,23 @@ AppDataSource.initialize()
     app.listen(port);
 
     // insert new users for test
-    await AppDataSource.manager.save(
-      AppDataSource.manager.create(User, {
-        firstName: "Timber",
-        lastName: "Saw",
-        age: 27,
-      })
-    );
+    // await AppDataSource.manager.save(
+    //   AppDataSource.manager.create(User, {
+    //     firstName: "Timber",
+    //     lastName: "Saw",
+    //     age: 27,
+    //   })
+    // );
 
-    await AppDataSource.manager.save(
-      AppDataSource.manager.create(User, {
-        firstName: "Phantom",
-        lastName: "Assassin",
-        age: 24,
-      })
-    );
+    // await AppDataSource.manager.save(
+    //   AppDataSource.manager.create(User, {
+    //     firstName: "Phantom",
+    //     lastName: "Assassin",
+    //     age: 24,
+    //   })
+    // );
+
+    startGame(io, AppDataSource);
 
     console.log(
       `Express server has started on port ${port}. Open http://localhost:${port}/users to see results`

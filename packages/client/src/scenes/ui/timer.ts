@@ -37,4 +37,8 @@ export class TimerUI {
         .substring(2, 6)}`
     );
   }
+
+  public getTimer(): string {
+    return this.timerText.toString()
+  }
 }

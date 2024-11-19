@@ -22,6 +22,8 @@ import { gameConfig } from "./ui/config";
 import { getScreenCenter } from "../utils/text";
 import { GameAssets, Scenes } from "../types";
 import { Body } from "matter";
+import { Router } from "express";
+import { TimerUI } from "./ui/timer";
 
 const sceneConfig: Phaser.Types.Scenes.SettingsConfig = {
   key: Scenes.GAME,
@@ -39,6 +41,7 @@ export enum GameSceneEvents {
 
   // Timer
   UPDATE_TIMER = "UPDATE_TIMER",
+  GET_TIMER = "GET_TIMER",
 
   PLAYER_WIN = "PLAYER_WIN",
 }
@@ -203,6 +206,7 @@ export default class GameScene extends Phaser.Scene {
           this.pendingInputs = [];
         }
       } else if (this.didPlayerWin) {
+        this.socket!.emit(ESocketEventNames.SendData, this.savedName, "lala");
         this.socket?.disconnect();
         this.scene.stop();
         this.playerObject.destroy();
@@ -331,9 +335,9 @@ export default class GameScene extends Phaser.Scene {
 
     this.restartOverlay.setInteractive({ useHandCursor: true });
 
-    this.restartOverlay.on("pointerdown", () => {
-      this.restartGame();
-    });
+    // this.restartOverlay.on("pointerdown", () => {
+    //   this.restartGame();
+    // });
 
     // Hide overlay by default
     this.setRestartOverlayVisibility(false);
@@ -346,9 +350,5 @@ export default class GameScene extends Phaser.Scene {
   public handlePlayerDeath(): void {
     this.gameState = "PLAYER_DEAD";
     this.setRestartOverlayVisibility(true);
-  }
-
-  public restartGame(): void {
-    this.socket!.emit(ESocketEventNames.RestartGame);
   }
 }

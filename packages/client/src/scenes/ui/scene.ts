@@ -59,6 +59,10 @@ export default class UIScene extends Phaser.Scene {
       this.timer.updateTimer();
     });
 
+    gameScene.events.on(GameSceneEvents.GET_TIMER, () => {
+      this.timer.getTimer();
+    });
+
     gameScene.events.on(GameSceneEvents.PLAYER_WIN, () => {
       this.scene.start(Scenes.LEADERBOARD);
     });

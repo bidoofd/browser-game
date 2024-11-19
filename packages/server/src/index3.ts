@@ -1,49 +1,49 @@
-import dotenv from "dotenv";
-import express from "express";
-import http from "http";
-import { Server as SocketServer } from "socket.io";
+// import dotenv from "dotenv";
+// import express from "express";
+// import http from "http";
+// import { Server as SocketServer } from "socket.io";
 
-import {
-  TClientToServerEvents,
-  TServerToClientEvents,
-} from "@speedrun-browser-game/common/build/types";
-import { startGame } from "./game";
+// import {
+//   TClientToServerEvents,
+//   TServerToClientEvents,
+// } from "@speedrun-browser-game/common/build/types";
+// import { startGame } from "./game";
 
-// Only require .env files in development or testing environments
-if (process.env.NODE_ENV !== "production") {
-  dotenv.config();
-}
+// // Only require .env files in development or testing environments
+// if (process.env.NODE_ENV !== "production") {
+//   dotenv.config();
+// }
 
-const app = express();
-const server = http.createServer(app);
-const PORT = process.env.PORT || 3200;
+// const app = express();
+// const server = http.createServer(app);
+// const PORT = process.env.PORT || 3200;
 
-app.get("/", async (_req, res) => {
-  const healthcheck = {
-    uptime: process.uptime(),
-    message: "OK",
-    timestamp: Date.now(),
-  };
-  try {
-    res.send(healthcheck);
-  } catch (error) {
-    healthcheck.message = error as any;
-    res.status(503).send();
-  }
-});
+// app.get("/", async (_req, res) => {
+//   const healthcheck = {
+//     uptime: process.uptime(),
+//     message: "OK",
+//     timestamp: Date.now(),
+//   };
+//   try {
+//     res.send(healthcheck);
+//   } catch (error) {
+//     healthcheck.message = error as any;
+//     res.status(503).send();
+//   }
+// });
 
-const io = new SocketServer<TClientToServerEvents, TServerToClientEvents>(
-  server,
-  {
-    cors: {
-      origin: '*',
-      methods: ["GET", "POST"],
-    },
-  }
-);
+// const io = new SocketServer<TClientToServerEvents, TServerToClientEvents>(
+//   server,
+//   {
+//     cors: {
+//       origin: '*',
+//       methods: ["GET", "POST"],
+//     },
+//   }
+// );
 
-startGame(io);
+// startGame(io);
 
-server.listen(PORT, () => {
-  console.log(`Listening on *:${PORT}`);
-});
+// server.listen(PORT, () => {
+//   console.log(`Listening on *:${PORT}`);
+// });

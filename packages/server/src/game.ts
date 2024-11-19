@@ -11,6 +11,9 @@ import { TPlayerInputMessage } from "@speedrun-browser-game/common/build/modules
 import { Player, getPlayersPublicData } from "./player";
 import { Map } from "./map";
 import { createLoop } from "./utils";
+import { Router } from "express";
+import { User } from "./database/entity/User";
+import { DataSource } from "typeorm";
 
 const UPDATE_LOOP_RATE_PER_SECOND = 16;
 
@@ -50,7 +53,8 @@ function handleNewPlayerJoined({
 }
 
 export function startGame(
-  io: SocketServer<TClientToServerEvents, TServerToClientEvents>
+  io: SocketServer<TClientToServerEvents, TServerToClientEvents>,
+  AppDataSource: DataSource
 ): void {
   let inputMessages: TPlayerInputMessage[] = [];
 
@@ -112,13 +116,14 @@ export function startGame(
       });
     });
 
-    socket.on(ESocketEventNames.RestartGame, () => {
-      player = handleNewPlayerJoined({
-        engine,
-        socket,
-        name: newPlayerName,
-        players,
-      });
+    socket.on(ESocketEventNames.SendData, (name, timer) => {
+       AppDataSource.manager.save(
+         AppDataSource.manager.create(User, {
+           firstName: name,
+           lastName: timer,
+           age: 1,
+         })
+       );
     });
   });
 
