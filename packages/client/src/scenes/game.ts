@@ -60,6 +60,8 @@ export default class GameScene extends Phaser.Scene {
   private didPlayerWin;
   private savedName;
   private savedID;
+  private timer: Phaser.Time.TimerEvent;
+  private timerSecondCount: number = 0;
 
   /**
    * INITIALIZED - Initial state - wait for initial game state from server
@@ -206,7 +208,10 @@ export default class GameScene extends Phaser.Scene {
           this.pendingInputs = [];
         }
       } else if (this.didPlayerWin) {
-        this.socket!.emit(ESocketEventNames.SendData, this.savedName, "lala");
+        // Get Local Timer
+        const timerTime = this.timerSecondCount.toString() + "." + this.timer.getElapsedSeconds().toString().substring(2,6);
+
+        this.socket!.emit(ESocketEventNames.SendData, this.savedName, timerTime);
         this.socket?.disconnect();
         this.scene.stop();
         this.playerObject.destroy();
@@ -227,6 +232,9 @@ export default class GameScene extends Phaser.Scene {
         );
       }
     });
+
+    // Local Timer Event
+    this.timer = this.time.addEvent({delay: 1000, callback: () => {this.timerSecondCount++}, callbackScope: this, loop: true})
   }
 
   public update(time: number, delta: number): void {

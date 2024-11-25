@@ -60,17 +60,18 @@ export default class GameScene extends Phaser.Scene {
       this.scene.launch(Scenes.UI);
     });
 
-    const startButton = this.add
-      .bitmapText(screenCenter.x, screenCenter.y + 60, GameAssets.TEXT, "START")
-      .setOrigin(0.5)
-      .setFontSize(48)
-      .setTintFill(0x00000);
+    // Removed start to leaderboard
+    // const startButton = this.add
+    //   .bitmapText(screenCenter.x, screenCenter.y + 60, GameAssets.TEXT, "START")
+    //   .setOrigin(0.5)
+    //   .setFontSize(48)
+    //   .setTintFill(0x00000);
 
-    startButton.setInteractive({ useHandCursor: true });
+    // startButton.setInteractive({ useHandCursor: true });
 
-    startButton.on("pointerdown", () => {
-      //this.scene.start(Scenes.GAME, { playerName: name });
-      this.scene.start(Scenes.LEADERBOARD);
-    });
+    // startButton.on("pointerdown", () => {
+    //   //this.scene.start(Scenes.GAME, { playerName: name });
+    //   this.scene.start(Scenes.LEADERBOARD);
+    // });
   }
 }
