@@ -9,8 +9,5 @@ export class User {
   firstName: string | undefined;
 
   @Column({ type: "varchar" })
-  lastName: string | undefined;
-
-  @Column({ type: "int" })
-  age: number | undefined;
+  time: string | undefined;
 }

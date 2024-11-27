@@ -14,6 +14,7 @@ import { createLoop } from "./utils";
 import { Router } from "express";
 import { User } from "./database/entity/User";
 import { DataSource } from "typeorm";
+import { plainToInstance } from "class-transformer";
 
 const UPDATE_LOOP_RATE_PER_SECOND = 16;
 
@@ -120,8 +121,7 @@ export function startGame(
        AppDataSource.manager.save(
          AppDataSource.manager.create(User, {
            firstName: name,
-           lastName: timer,
-           age: 1,
+           time: timer,
          })
        );
     });
@@ -129,12 +129,11 @@ export function startGame(
     socket.on(ESocketEventNames.GetData, async () => {
       let repo = AppDataSource.getRepository(User);
       let firstUser = await repo.find();
-      let jsonObject = JSON.stringify(firstUser);
-      console.log("firstUser", firstUser);
+      let plain = plainToInstance(User, firstUser);
       socket.emit(ESocketEventNames.LeaderboardUpdate, {
-        object: jsonObject
-      })
-    })
+        object: plain,
+      });
+    });
   });
 
   createLoop(1000 / UPDATE_LOOP_RATE_PER_SECOND, () => {

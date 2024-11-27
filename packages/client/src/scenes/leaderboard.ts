@@ -40,19 +40,38 @@ export default class GameScene extends Phaser.Scene {
     this.load.bitmapFont(GameAssets.TEXT, MonogramFontPNG, MonogramFontXML);
   }
 
-  public create(socket: Socket): void {
-    const iosocket = socket
+  public create(socket: Socket) {
+    const iosocket = socket;
     const screenCenter = getScreenCenter(this);
+    let leaderboardArray: any[] = [];
 
-    if(iosocket.connected === true) {
-      console.log("connected true");
+    if (iosocket.connected === true) {
       iosocket.emit(ESocketEventNames.GetData);
-      iosocket.on(ESocketEventNames.LeaderboardUpdate, async (update) => {
-        console.log("update", await update.object)
+      iosocket.on(ESocketEventNames.LeaderboardUpdate, (update) => {
+        for (const i in update.object) {
+          leaderboardArray.push(update.object[i]);
+        }
+        for (let i = 0; i < 10; i++) {
+          if(leaderboardArray[i] !== undefined) {
+            this.add
+       .bitmapText(
+         screenCenter.x,
+         screenCenter.y + this.rankCount,
+         GameAssets.TEXT,
+         `${i+1}      ${leaderboardArray[i].firstName}      ${leaderboardArray[i].time}`
+       )
+       .setFontSize(72)
+       .setOrigin(0.5)
+       .setTintFill(0x000000);
+     this.rankCount += 50;
+          } else {
+            break;
+          }
+        }
+        iosocket.removeAllListeners();
         iosocket.disconnect();
-      })
+      });
     }
-    
 
     this.add
       .bitmapText(
@@ -75,19 +94,20 @@ export default class GameScene extends Phaser.Scene {
       .setFontSize(72)
       .setOrigin(0.5)
       .setTintFill(0x000000);
-    this.rankData.forEach((scoreline) => {
-      this.add
-        .bitmapText(
-          screenCenter.x,
-          screenCenter.y + this.rankCount,
-          GameAssets.TEXT,
-          `${scoreline.rank}      ${scoreline.name}      ${scoreline.score}`
-        )
-        .setFontSize(72)
-        .setOrigin(0.5)
-        .setTintFill(0x000000);
-      this.rankCount += 50;
-    });
+
+    // this.rankData.forEach((scoreline) => {
+    //   this.add
+    //     .bitmapText(
+    //       screenCenter.x,
+    //       screenCenter.y + this.rankCount,
+    //       GameAssets.TEXT,
+    //       `${scoreline.rank}      ${scoreline.name}      ${scoreline.score}`
+    //     )
+    //     .setFontSize(72)
+    //     .setOrigin(0.5)
+    //     .setTintFill(0x000000);
+    //   this.rankCount += 50;
+    // });
 
     const levelSelectorButton = this.add
       .bitmapText(screenCenter.x, screenCenter.y + 300, GameAssets.TEXT, "BACK")

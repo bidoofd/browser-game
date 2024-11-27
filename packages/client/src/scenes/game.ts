@@ -209,14 +209,23 @@ export default class GameScene extends Phaser.Scene {
         }
       } else if (this.didPlayerWin) {
         // Get Local Timer
-        const timerTime = this.timerSecondCount.toString() + "." + this.timer.getElapsedSeconds().toString().substring(2,6);
+        const timerTime =
+          this.timerSecondCount.toString() +
+          "." +
+          this.timer.getElapsedSeconds().toString().substring(2, 6);
 
-        this.socket!.emit(ESocketEventNames.SendData, this.savedName, timerTime);
+        this.socket!.emit(
+          ESocketEventNames.SendData,
+          this.savedName,
+          timerTime
+        );
         this.scene.stop();
         this.playerObject.destroy();
         this.events.emit(GameSceneEvents.PLAYER_WIN, this.socket);
         // this.socket?.removeAllListeners();
         // this.events.removeAllListeners();
+        //stops double send data?
+        return;
       } else if (update.type === "PLAYER_JOINED") {
         this.events.emit(GameSceneEvents.PLAYER_JOINED, update.player.name);
         this.playersManager?.addPlayer(update.playerId, update.player);
@@ -235,7 +244,14 @@ export default class GameScene extends Phaser.Scene {
     });
 
     // Local Timer Event
-    this.timer = this.time.addEvent({delay: 1000, callback: () => {this.timerSecondCount++}, callbackScope: this, loop: true})
+    this.timer = this.time.addEvent({
+      delay: 1000,
+      callback: () => {
+        this.timerSecondCount++;
+      },
+      callbackScope: this,
+      loop: true,
+    });
   }
 
   public update(time: number, delta: number): void {

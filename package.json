@@ -38,6 +38,7 @@
    "dependencies": {
       "@socket.io/postgres-adapter": "^0.4.0",
       "body-parser": "^1.19.1",
+      "class-transformer": "^0.5.1",
       "express": "^4.17.2",
       "morgan": "^1.10.0",
       "pg": "^8.13.1",

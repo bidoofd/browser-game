@@ -22,17 +22,13 @@ export const Routes = [
     route: "/users",
     controller: UserController,
     action: "save",
-    validation: [
-      body("firstName").isString(),
-      body("lastName").isString(),
-      body("age").isInt({ min: 0 }).withMessage("Must be at positive age"),
-    ],
+    validation: [body("firstName").isString(), body("time").isString()],
   },
   {
     method: "delete",
     route: "/users/:id",
     controller: UserController,
     action: "remove",
-    validation: [body("age").isInt()],
+    validation: [body("time").isString()],
   },
 ];
