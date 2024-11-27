@@ -225,6 +225,7 @@ export default class GameScene extends Phaser.Scene {
         // this.socket?.removeAllListeners();
         // this.events.removeAllListeners();
         //stops double send data?
+        this.timerSecondCount = 0;
         return;
       } else if (update.type === "PLAYER_JOINED") {
         this.events.emit(GameSceneEvents.PLAYER_JOINED, update.player.name);
@@ -258,6 +259,8 @@ export default class GameScene extends Phaser.Scene {
     if (!this.player || this.gameState !== "IN_PROCESS") return;
 
     const keys: ECursorKey[] = [];
+
+    console.log("playercollisiondirection, ", this.player.collisionDirection);
 
     if (
       !this.cursorKeys.up.isDown &&
@@ -317,6 +320,8 @@ export default class GameScene extends Phaser.Scene {
     if (keys.length === 0) {
       keys.push(ECursorKey.FALLING);
     }
+
+    console.log("keys", keys)
 
     this.player.update({ keys, delta });
 

@@ -12,6 +12,8 @@ const addWorldBounds = (world: Matter.World) => {
     // Left
     matter.Bodies.rectangle(-5, MAP_SIZE.height / 2, 10, MAP_SIZE.height, {
       isStatic: true,
+      slop: 0.0001,
+      inertia: Infinity,
     }),
 
     // Right
@@ -22,7 +24,8 @@ const addWorldBounds = (world: Matter.World) => {
       MAP_SIZE.height,
       {
         isStatic: true,
-        slop: 0.0001
+        slop: 0.0001,
+        inertia: Infinity,
       }
     ),
 
@@ -31,7 +34,8 @@ const addWorldBounds = (world: Matter.World) => {
     // Top
     matter.Bodies.rectangle(MAP_SIZE.width / 2, -5, MAP_SIZE.width, 10, {
       isStatic: true,
-      slop: 0.0001
+      slop: 0.0001,
+      inertia: Infinity,
     }),
 
     // Bottom
@@ -40,9 +44,7 @@ const addWorldBounds = (world: Matter.World) => {
       MAP_SIZE.height + 5,
       MAP_SIZE.width,
       10,
-      { isStatic: true,
-        slop: 0.0001
-       }
+      { isStatic: true, slop: 0.0001, inertia: Infinity }
     ),
   ]);
 };
@@ -80,11 +82,15 @@ const layerToTileset = (
     if (customCollisionObjects) {
       customCollisionObjects.forEach((collisionObject) => {
         const body = matter.Bodies.rectangle(
-          tileX * mapJson.tilewidth + collisionObject.x + collisionObject.width / 4,
-          tileY * mapJson.tileheight + collisionObject.y + collisionObject.height / 4,
+          tileX * mapJson.tilewidth +
+            collisionObject.x +
+            collisionObject.width / 4,
+          tileY * mapJson.tileheight +
+            collisionObject.y +
+            collisionObject.height / 4,
           collisionObject.width,
           collisionObject.height,
-          { isStatic: true, restitution: 0, slop: 0.0001 }
+          { isStatic: true, restitution: 0, slop: 0.0001, inertia: Infinity }
         );
         matter.Composite.add(world, body);
       });
@@ -95,7 +101,7 @@ const layerToTileset = (
         tileY * mapJson.tileheight + mapJson.tileheight / 4,
         mapJson.tilewidth,
         mapJson.tileheight,
-        { isStatic: true, restitution: 0, slop: 0.0001}
+        { isStatic: true, restitution: 0, slop: 0.0001, inertia: Infinity }
       );
       matter.Composite.add(world, body);
     }
@@ -118,11 +124,11 @@ export function getValidBodyPosition(
   bodySize: number
 ): TVector2 {
   const tilesets = mapJson.layers.find((t) => t.name === "Interactables")!;
-  const levelarray = tilesets.data
+  const levelarray = tilesets.data;
   const numColumns = tilesets.width; // Number of elements per row
-  const numRows = tilesets.height // Calculate the number of rows
+  const numRows = tilesets.height; // Calculate the number of rows
 
-  let newPosition: TVector2 = {x: 0, y: 0};
+  let newPosition: TVector2 = { x: 0, y: 0 };
 
   // Loop through the 2D "array"
   for (let row = 0; row < numRows; row++) {
@@ -130,17 +136,16 @@ export function getValidBodyPosition(
     const rowStart = row * numColumns;
     const rowEnd = Math.min((row + 1) * numColumns, levelarray.length);
     const rowArray = levelarray.slice(rowStart, rowEnd);
-    
+
     // Process each row
-    
+
     // If you want to stop on encountering a number 20, add a break condition
     if (rowArray.includes(20)) {
-      newPosition.y = row
-      newPosition.x = rowArray.indexOf(20)
+      newPosition.y = row;
+      newPosition.x = rowArray.indexOf(20);
       break; // Exit the loop when 20 is found
     }
   }
-
 
   const pos = {
     x: newPosition.x * 16,

@@ -42,6 +42,7 @@ export const createMap = (scene: Phaser.Scene): void => {
   //const natureLayer = map.createLayer("nature", natureTileset, 0, 0);
 
   blockLayer.setCollisionByProperty({ collides: true});
+  backgroundLayer.setCollisionByProperty({collides: false})
   //natureLayer.setCollisionByProperty({ collides: true });
 
   scene.matter.world.convertTilemapLayer(objectLayer);

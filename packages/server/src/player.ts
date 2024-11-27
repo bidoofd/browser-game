@@ -62,7 +62,7 @@ export class Player {
         },
         slop: 0.0001,
         friction: 1,
-        frictionStatic: 0
+        frictionStatic: 0,
       }
     );
     matter.Composite.add(world, this.body);
