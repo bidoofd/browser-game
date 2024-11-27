@@ -116,7 +116,7 @@ export function startGame(
       });
     });
 
-    socket.on(ESocketEventNames.SendData, (name, timer) => {
+    socket.on(ESocketEventNames.SendData, (name: string, timer: string) => {
        AppDataSource.manager.save(
          AppDataSource.manager.create(User, {
            firstName: name,
@@ -125,6 +125,16 @@ export function startGame(
          })
        );
     });
+
+    socket.on(ESocketEventNames.GetData, async () => {
+      let repo = AppDataSource.getRepository(User);
+      let firstUser = await repo.find();
+      let jsonObject = JSON.stringify(firstUser);
+      console.log("firstUser", firstUser);
+      socket.emit(ESocketEventNames.LeaderboardUpdate, {
+        object: jsonObject
+      })
+    })
   });
 
   createLoop(1000 / UPDATE_LOOP_RATE_PER_SECOND, () => {

@@ -215,8 +215,8 @@ export default class GameScene extends Phaser.Scene {
         this.scene.stop();
         this.playerObject.destroy();
         this.events.emit(GameSceneEvents.PLAYER_WIN, this.socket);
-        this.socket?.removeAllListeners();
-        this.events.removeAllListeners();
+        // this.socket?.removeAllListeners();
+        // this.events.removeAllListeners();
       } else if (update.type === "PLAYER_JOINED") {
         this.events.emit(GameSceneEvents.PLAYER_JOINED, update.player.name);
         this.playersManager?.addPlayer(update.playerId, update.player);

@@ -3,16 +3,17 @@ import { TPlayerInput, TPlayer, TPlayers } from "../modules/player";
 export enum ESocketEventNames {
   // Server to client
   GameUpdate = "GAME_UPDATE",
+  LeaderboardUpdate = "LEADERBOARD_UPDATE",
   // Client to server
   PlayerInput = "PLAYER_INPUT",
   SendData = "SEND_DATA",
-  //SendData = "SEND_DATA",
+  GetData = "GET_DATA",
 }
 
 export type TClientToServerEvents = {
   [ESocketEventNames.PlayerInput]: (input: TPlayerInput) => void;
   [ESocketEventNames.SendData]: (name: string, time: string) => void;
-  //[ESocketEventNames.SendData]: () => void;
+  [ESocketEventNames.GetData]: () => void;
 };
 
 export type TServerToClientEvents = {
@@ -42,5 +43,10 @@ export type TServerToClientEvents = {
           type: "GAME_STATE";
           players: TPlayers;
         }
+  ) => void;
+  [ESocketEventNames.LeaderboardUpdate]: (
+    leaderboardUpdate: {
+      object: any
+    }
   ) => void;
 };

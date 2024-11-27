@@ -10,6 +10,7 @@ import BadMofoXML from "url:../assets/fonts/BadMofo.xml";
 import { getScreenCenter } from "../utils/text";
 import { GameAssets, Scenes } from "../types";
 import { Socket } from "socket.io-client";
+import { ESocketEventNames } from "@speedrun-browser-game/common/src/types";
 
 const sceneConfig: Phaser.Types.Scenes.SettingsConfig = {
   active: false,
@@ -44,8 +45,14 @@ export default class GameScene extends Phaser.Scene {
     const screenCenter = getScreenCenter(this);
 
     if(iosocket.connected === true) {
-      console.log("true");
+      console.log("connected true");
+      iosocket.emit(ESocketEventNames.GetData);
+      iosocket.on(ESocketEventNames.LeaderboardUpdate, async (update) => {
+        console.log("update", await update.object)
+        iosocket.disconnect();
+      })
     }
+    
 
     this.add
       .bitmapText(
