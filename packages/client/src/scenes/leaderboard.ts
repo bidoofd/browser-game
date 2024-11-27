@@ -51,19 +51,26 @@ export default class GameScene extends Phaser.Scene {
         for (const i in update.object) {
           leaderboardArray.push(update.object[i]);
         }
+        for (let i = 0; i < leaderboardArray.length; i++) {
+          leaderboardArray.sort((a, b) => {
+            return parseFloat(a.time) - parseFloat(b.time);
+          });
+        }
         for (let i = 0; i < 10; i++) {
-          if(leaderboardArray[i] !== undefined) {
+          if (leaderboardArray[i] !== undefined) {
             this.add
-       .bitmapText(
-         screenCenter.x,
-         screenCenter.y + this.rankCount,
-         GameAssets.TEXT,
-         `${i+1}      ${leaderboardArray[i].firstName}      ${leaderboardArray[i].time}`
-       )
-       .setFontSize(72)
-       .setOrigin(0.5)
-       .setTintFill(0x000000);
-     this.rankCount += 50;
+              .bitmapText(
+                screenCenter.x,
+                screenCenter.y + this.rankCount,
+                GameAssets.TEXT,
+                `${i + 1}      ${leaderboardArray[i].firstName}      ${
+                  leaderboardArray[i].time
+                }`
+              )
+              .setFontSize(72)
+              .setOrigin(0.5)
+              .setTintFill(0x000000);
+            this.rankCount += 50;
           } else {
             break;
           }
