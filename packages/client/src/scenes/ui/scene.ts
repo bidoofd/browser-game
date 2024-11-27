@@ -3,6 +3,7 @@ import { GameSceneEvents } from "../game";
 import { PlayerCountUI } from "./player-count";
 import { ChatUI } from "./chat";
 import { TimerUI } from "./timer";
+import { Socket } from "socket.io-client";
 
 const sceneConfig: Phaser.Types.Scenes.SettingsConfig = {
   key: Scenes.UI,
@@ -63,8 +64,8 @@ export default class UIScene extends Phaser.Scene {
       this.timer.getTimer();
     });
 
-    gameScene.events.on(GameSceneEvents.PLAYER_WIN, () => {
-      this.scene.start(Scenes.LEADERBOARD);
+    gameScene.events.on(GameSceneEvents.PLAYER_WIN, (socket: Socket) => {
+      this.scene.start(Scenes.LEADERBOARD, socket);
     });
   }
 }

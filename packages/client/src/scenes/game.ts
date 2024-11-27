@@ -212,10 +212,11 @@ export default class GameScene extends Phaser.Scene {
         const timerTime = this.timerSecondCount.toString() + "." + this.timer.getElapsedSeconds().toString().substring(2,6);
 
         this.socket!.emit(ESocketEventNames.SendData, this.savedName, timerTime);
-        this.socket?.disconnect();
         this.scene.stop();
         this.playerObject.destroy();
-        this.events.emit(GameSceneEvents.PLAYER_WIN, this.savedName);
+        this.events.emit(GameSceneEvents.PLAYER_WIN, this.socket);
+        this.socket?.removeAllListeners();
+        this.events.removeAllListeners();
       } else if (update.type === "PLAYER_JOINED") {
         this.events.emit(GameSceneEvents.PLAYER_JOINED, update.player.name);
         this.playersManager?.addPlayer(update.playerId, update.player);

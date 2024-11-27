@@ -9,6 +9,7 @@ import BadMofoFontPNG from "url:../assets/fonts/BadMofo.png";
 import BadMofoXML from "url:../assets/fonts/BadMofo.xml";
 import { getScreenCenter } from "../utils/text";
 import { GameAssets, Scenes } from "../types";
+import { Socket } from "socket.io-client";
 
 const sceneConfig: Phaser.Types.Scenes.SettingsConfig = {
   active: false,
@@ -38,9 +39,13 @@ export default class GameScene extends Phaser.Scene {
     this.load.bitmapFont(GameAssets.TEXT, MonogramFontPNG, MonogramFontXML);
   }
 
-  public create({ playerName }: { playerName: string }): void {
-    const name = playerName;
+  public create(socket: Socket): void {
+    const iosocket = socket
     const screenCenter = getScreenCenter(this);
+
+    if(iosocket.connected === true) {
+      console.log("true");
+    }
 
     this.add
       .bitmapText(
