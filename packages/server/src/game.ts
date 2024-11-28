@@ -74,11 +74,11 @@ export function startGame(
   matter.Events.on(runner, "afterTick", (event) => {
     const delta = event.source.delta;
 
-   Restart players velocity on each tick
-   Object.keys(players).forEach((playerId) => {
-     const player = players[playerId];
-     matter.Body.setVelocity(player.body, { x: 0, y: 0 });
-   });
+    // Restart players velocity on each tick
+    Object.keys(players).forEach((playerId) => {
+      const player = players[playerId];
+      matter.Body.setVelocity(player.body, { x: 0, y: 0 });
+    });
 
     inputMessages.forEach(({ playerId, input }) => {
       const player = players[playerId];
