@@ -57,7 +57,7 @@ export default class GameScene extends Phaser.Scene {
           });
         }
         for (let i = 0; i < 10; i++) {
-          if (leaderboardArray[i] !== undefined) {
+          if (leaderboardArray[i] !== undefined && this.rankCount < 250) {
             this.add
               .bitmapText(
                 screenCenter.x,
@@ -72,6 +72,7 @@ export default class GameScene extends Phaser.Scene {
               .setTintFill(0x000000);
             this.rankCount += 50;
           } else {
+            this.rankCount = -250;
             break;
           }
         }

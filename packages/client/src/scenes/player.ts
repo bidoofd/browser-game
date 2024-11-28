@@ -76,8 +76,8 @@ export class PlayersManager {
         }
         player.setPosition(playerUpdate.position.x, playerUpdate.position.y);
         //player.setDepth(playerUpdate.position.y);
-       } //else {
-      //   if (isCurrentPlayer) {  
+      } //else {
+      //   if (isCurrentPlayer) {
       //     if (player) {
       //       handlePlayerDeath();
       //     }
@@ -145,7 +145,7 @@ export class Player extends Phaser.GameObjects.Container {
     }: {
       collision: { normal: TVector2 };
     }) => {
-      if(collision.normal.x === 0 && collision.normal.y === 1) {
+      if (collision.normal.x === 0 && collision.normal.y === 1) {
         this.collisionDirection = Direction.STILL;
       }
       if (collision.normal.x > 0 && collision.normal.y < 0) {
@@ -156,6 +156,8 @@ export class Player extends Phaser.GameObjects.Container {
         this.collisionDirection = Direction.DOWN;
       } else if (collision.normal.y < 0) {
         this.collisionDirection = Direction.UP;
+      } else if (collision.normal.x === -1 && collision.normal.y === 0) {
+        this.collisionDirection = Direction.FALLING;
       }
     };
 
@@ -191,11 +193,9 @@ export class Player extends Phaser.GameObjects.Container {
         delta,
         direction: inputMovementDirection,
       });
-      if(this.scene !== undefined) {
+      if (this.scene !== undefined) {
         this.scene.matter.setVelocity(this.body, newVelocity.x, newVelocity.y);
       }
     }
   }
 }
-
-

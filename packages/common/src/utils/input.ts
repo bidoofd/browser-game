@@ -5,6 +5,10 @@ export const getDirectionFromInputKeys = (
   keys: ECursorKey[]
 ): Direction | undefined => {
 
+  if(keys.includes(ECursorKey.STILL)) {
+    return Direction.STILL;
+  }
+
   if(keys.includes(ECursorKey.FALLING)) {
     return Direction.FALLING;
   }

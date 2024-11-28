@@ -260,8 +260,6 @@ export default class GameScene extends Phaser.Scene {
 
     const keys: ECursorKey[] = [];
 
-    console.log("playercollisiondirection, ", this.player.collisionDirection);
-
     if (
       !this.cursorKeys.up.isDown &&
       !this.cursorKeys.left.isDown &&
@@ -320,8 +318,6 @@ export default class GameScene extends Phaser.Scene {
     if (keys.length === 0) {
       keys.push(ECursorKey.FALLING);
     }
-
-    console.log("keys", keys)
 
     this.player.update({ keys, delta });
 

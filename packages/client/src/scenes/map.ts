@@ -4,7 +4,7 @@ import tilesetInteriorFloor from "url:@speedrun-browser-game/common/src/modules/
 import tilesetNature from "url:@speedrun-browser-game/common/src/modules/map/TilesetNature.png";
 import mapJson from "@speedrun-browser-game/common/src/modules/map/map.json";*/
 
-import level1Json from "@speedrun-browser-game/common/src/modules/map/level2.json";
+import level1Json from "@speedrun-browser-game/common/src/modules/map/level6.json";
 import tiles from "url:@speedrun-browser-game/common/src/modules/map/tiles.png";
 
 import Phaser from "phaser";
