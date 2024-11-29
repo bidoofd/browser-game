@@ -43,7 +43,7 @@ export default class GameScene extends Phaser.Scene {
   public create(socket: Socket) {
     const iosocket = socket;
     const screenCenter = getScreenCenter(this);
-    let leaderboardArray: any[] = [];
+    const leaderboardArray: any[] = [];
 
     if (iosocket.connected === true) {
       iosocket.emit(ESocketEventNames.GetData);

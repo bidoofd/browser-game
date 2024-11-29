@@ -139,6 +139,7 @@ export class Player extends Phaser.GameObjects.Container {
     // Prevent body from rotating
     this.body.inverseInertia = 0;
     this.body.collisionFilter.group = -1;
+    this.body.slop = 0.0000001;
 
     this.body.onCollideActiveCallback = ({
       collision,
@@ -161,7 +162,11 @@ export class Player extends Phaser.GameObjects.Container {
       }
     };
 
-    this.body.onCollideEndCallback = () => {
+    this.body.onCollideEndCallback = ({
+      collision,
+    }: {
+      collision: { normal: TVector2 };
+    }) => {
       this.collisionDirection = undefined;
     };
 
