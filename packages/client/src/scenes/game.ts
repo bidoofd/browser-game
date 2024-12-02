@@ -91,6 +91,7 @@ export default class GameScene extends Phaser.Scene {
       query: {
         playerName,
       },
+      transports: ["websocket"]
     });
 
     this.playersManager = new PlayersManager({ scene: this });
@@ -214,6 +215,8 @@ export default class GameScene extends Phaser.Scene {
           "." +
           this.timer.getElapsedSeconds().toString().substring(2, 6);
 
+        console.log("SENDING DATA")
+
         this.socket!.emit(
           ESocketEventNames.SendData,
           this.savedName,
@@ -222,7 +225,7 @@ export default class GameScene extends Phaser.Scene {
         this.scene.stop();
         this.playerObject.destroy();
         this.events.emit(GameSceneEvents.PLAYER_WIN, this.socket);
-        // this.socket?.removeAllListeners();
+        this.socket?.removeAllListeners();
         // this.events.removeAllListeners();
         //stops double send data?
         this.timerSecondCount = 0;

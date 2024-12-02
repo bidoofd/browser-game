@@ -53,3 +53,11 @@ https://github.com/arielger/lifecycle
 #### Current Bugs
 - Player still moves to the right on its own without setVelocityX(-10)
     - Not sure how to fix this... maybe it has something to do with a player colliding all the time against a block?
+
+npm run dev - SERVER
+
+ngrok http --domain=strong-firefly-talented.ngrok-free.app 3200 --config "/Users/trando/Library/Application Support/ngrok/ngrok2.yml" - SERVER
+
+npm run dev - CLIENT
+
+ngrok http 172.24.133.192:1234 --domain=helpful-elf-slightly.ngrok-free.app - CLIENT
