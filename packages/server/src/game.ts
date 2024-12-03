@@ -118,12 +118,12 @@ export function startGame(
     });
 
     socket.on(ESocketEventNames.SendData, (name: string, timer: string) => {
-       AppDataSource.manager.save(
-         AppDataSource.manager.create(User, {
-           firstName: name,
-           time: timer,
-         })
-       );
+      AppDataSource.manager.save(
+        AppDataSource.manager.create(User, {
+          firstName: name,
+          time: timer,
+        })
+      );
     });
 
     socket.on(ESocketEventNames.GetData, async () => {

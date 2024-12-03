@@ -1,63 +1,31 @@
 #### To Start
 
-In Root, Run
+Ensure you have the Docker Desktop application installed
+Ensure you have two ngrok authtokens, one for the client, and one for the server.
 
-npm run build:client && npm run start:server
+To add your ngrok token:
+`ngrok add-authtoken *INSERT TOKEN*`: authtoken to be used for the server
 
-After server is setup, cd packages/client. Run
+In the directory your authtoken, create another ngrok.yml file with your other authtoken
 
-npm run dev
+`npm i`: install node module packages
+`npm run start:server`: builds and starts the server
+`npm run build:client`: builds the client
 
-#### Socket:
+`npm run startdev`: builds both server and client
+`npm run dev`: starts the server allowing changes to be made live
 
-Socket functionality broken down from:
+After building the client and starting the server, the server shall be running at this point; the client shall not.
+To Run the client:
 
-https://github.com/arielger/lifecycle
+`cd packages && cd client && npm run dev`: Change the directory to the client, and runs the built client file
 
-#### TODO:
+At this point, both the server and client shall be running locally.
 
---- Definitely need to scale down level files/modularise them
+To expose the server to the web with ngrok:
 
-- Implement combinational player movement logic
-    - Implement different types of movement
-        - Ladder, water?
-- Implement Block Palette to replace tiles within map
-    - Implement start and finish tile logic
-- Implement Timer
-    - Implement Minute conversion
-    - Add Time limit on certain levels
-- Implement level completion screen/scene
-    - Maybe more design?
-- Implement level selector screen/scene
-    - Maybe more design?
+`ngrok http --domain=`NGROK_DOMAIN_OF_SERVER.com` --config "PATH_TO\ngrok2.yml":
+will expose the localhost to ngrok domain
 
-#### Extra Info
-- Tiles are 16x16
-- Font for logo is Bad Mofo
-- Font for buttons is Courier size 16px
-
-#### Level Info
-- Create a standardised system of level size
-    - Eg. a 10x15 tile world, a 20x40 tile world, etc.
-- Level One
-    - Sandbox level
-- Level Two
-    - Small level
-- Level Three
-    - Skill Level
-- Level Four
-    - Speedrun level
-- Level Five
-    - Minigame level
-
-#### Current Bugs
-- Player still moves to the right on its own without setVelocityX(-10)
-    - Not sure how to fix this... maybe it has something to do with a player colliding all the time against a block?
-
-npm run dev - SERVER
-
-ngrok http --domain=strong-firefly-talented.ngrok-free.app 3200 --config "/Users/trando/Library/Application Support/ngrok/ngrok2.yml" - SERVER
-
-npm run dev - CLIENT
-
-ngrok http 172.24.133.192:1234 --domain=helpful-elf-slightly.ngrok-free.app - CLIENT
+`ngrok http `CLIENT_IP_ADDRESS`:1234 --domain=`NGROK_DOMAIN_OF_CLIENT`:
+will expose the client ip address to ngrok domain

@@ -87,11 +87,12 @@ export default class GameScene extends Phaser.Scene {
   }
 
   public async create({ playerName }: { playerName: string }): Promise<void> {
+    // Createn Socket
     this.socket = io(process.env.SOCKET_SERVER_URL, {
       query: {
         playerName,
       },
-      transports: ["websocket"]
+      transports: ["websocket"],
     });
 
     this.playersManager = new PlayersManager({ scene: this });
@@ -142,6 +143,7 @@ export default class GameScene extends Phaser.Scene {
           Object.keys(update.players).length
         );
       } else if (update.type === "GAME_STATE" && !this.didPlayerWin) {
+        // Event for collision on the finish tile
         this.matter.world.on("collisionstart", (event, bodyA, bodyB) => {
           var pairs = event.pairs;
           pairs.forEach((pair) => {
@@ -179,6 +181,8 @@ export default class GameScene extends Phaser.Scene {
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             update.players[this.playerId!].lastProcessedInput;
 
+
+          // Get position of player
           let newPosition = {
             x: this.player!.x,
             y: this.player!.y,
@@ -191,6 +195,7 @@ export default class GameScene extends Phaser.Scene {
               return;
             }
 
+            // Get the position difference
             const positionDelta = getPlayerVelocity({
               delta: input.timeDelta,
               direction: getDirectionFromInputKeys(input.keys),
@@ -214,7 +219,6 @@ export default class GameScene extends Phaser.Scene {
           this.timerSecondCount.toString() +
           "." +
           this.timer.getElapsedSeconds().toString().substring(2, 6);
-
 
         this.socket!.emit(
           ESocketEventNames.SendData,
