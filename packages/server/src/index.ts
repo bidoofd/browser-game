@@ -129,8 +129,8 @@ AppDataSource.initialize()
     // start express server
     app.use(handleError);
     app.set('trust proxy', true)
-    app.listen(3200, 'CLIENT_IP');
-    //app.listen(port);
+    //app.listen(3200, 'CLIENT_IP');
+    app.listen(port);
 
     // insert new users for test
     // await AppDataSource.manager.save(

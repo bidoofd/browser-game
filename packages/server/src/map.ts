@@ -1,5 +1,5 @@
 import matter from "matter-js";
-import mapJson from "@speedrun-browser-game/common/src/modules/map/level6.json";
+import mapJson from "@speedrun-browser-game/common/src/modules/map/level7.json";
 import { MAP_SIZE } from "@speedrun-browser-game/common/build/modules/map";
 
 import { randomInt } from "@speedrun-browser-game/common/build/utils/numbers";
