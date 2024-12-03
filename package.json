@@ -1,6 +1,6 @@
 {
    "name": "speedrun-browser-game",
-   "author": "Ariel Gerstein <ariel.gers@gmail.com>",
+   "author": "bidoofd",
    "license": "AGPL-3.0-or-later",
    "private": true,
    "workspaces": [

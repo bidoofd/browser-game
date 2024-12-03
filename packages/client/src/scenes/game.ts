@@ -215,7 +215,6 @@ export default class GameScene extends Phaser.Scene {
           "." +
           this.timer.getElapsedSeconds().toString().substring(2, 6);
 
-        console.log("SENDING DATA")
 
         this.socket!.emit(
           ESocketEventNames.SendData,

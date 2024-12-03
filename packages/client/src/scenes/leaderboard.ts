@@ -1,8 +1,6 @@
 import Phaser from "phaser";
 import InputText from "phaser3-rex-plugins/plugins/inputtext.js";
 
-import { randomInt } from "@speedrun-browser-game/common/src/utils/numbers";
-
 import MonogramFontPNG from "url:../assets/fonts/monogram.png";
 import MonogramFontXML from "url:../assets/fonts/monogram.xml";
 import BadMofoFontPNG from "url:../assets/fonts/BadMofo.png";
@@ -11,6 +9,7 @@ import { getScreenCenter } from "../utils/text";
 import { GameAssets, Scenes } from "../types";
 import { Socket } from "socket.io-client";
 import { ESocketEventNames } from "@speedrun-browser-game/common/src/types";
+import { delay } from "../utils/utils";
 
 const sceneConfig: Phaser.Types.Scenes.SettingsConfig = {
   active: false,
@@ -40,14 +39,25 @@ export default class GameScene extends Phaser.Scene {
     this.load.bitmapFont(GameAssets.TEXT, MonogramFontPNG, MonogramFontXML);
   }
 
-  public create(socket: Socket) {
+  public async create(socket: Socket) {
     const iosocket = socket;
     const screenCenter = getScreenCenter(this);
     const leaderboardArray: any[] = [];
 
     if (iosocket.connected === true) {
+      const waitText = this.add
+      .bitmapText(
+        screenCenter.x,
+        screenCenter.y - 300,
+        GameAssets.TEXT,
+        `GETTING DATA...`
+      )
+      .setFontSize(72)
+      .setOrigin(0.5)
+      .setTintFill(0x000000);
+      await delay(1000);
       iosocket.emit(ESocketEventNames.GetData);
-      iosocket.on(ESocketEventNames.LeaderboardUpdate, (update) => {
+      iosocket.on(ESocketEventNames.LeaderboardUpdate, async (update) => {
         for (const i in update.object) {
           leaderboardArray.push(update.object[i]);
         }
@@ -76,6 +86,7 @@ export default class GameScene extends Phaser.Scene {
             break;
           }
         }
+        waitText.setVisible(false);
         iosocket.removeAllListeners();
         iosocket.disconnect();
       });

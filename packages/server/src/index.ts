@@ -129,7 +129,7 @@ AppDataSource.initialize()
     // start express server
     app.use(handleError);
     app.set('trust proxy', true)
-    app.listen(3200, "172.24.133.192");
+    app.listen(3200, 'CLIENT_IP');
     //app.listen(port);
 
     // insert new users for test
